@@ -7,7 +7,7 @@ services:
       - .:/var/www/html
     working_dir: /var/www/html
     depends_on:
-      postgres:
+      mysql:
         condition: service_healthy
     networks:
       - myfinance
@@ -24,36 +24,42 @@ services:
     networks:
       - myfinance
 
-  postgres:
-    image: postgres:16-alpine
+  mysql:
+    image: mysql:8.4
     environment:
-      POSTGRES_DB: ${DB_DATABASE:-myfinance}
-      POSTGRES_USER: ${DB_USERNAME:-myfinance}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-secret}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-secret}
+      MYSQL_DATABASE: ${DB_DATABASE:-myfinance}
+      MYSQL_USER: ${DB_USERNAME:-myfinance}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
     ports:
-      - "5432:5432"
+      - "3306:3306"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-myfinance} -d ${DB_DATABASE:-myfinance}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
+      start_period: 10s
     networks:
       - myfinance
 
-  adminer:
-    image: adminer
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: ${DB_USERNAME:-myfinance}
+      PMA_PASSWORD: ${DB_PASSWORD:-secret}
     ports:
-      - "8081:8080"
+      - "8081:80"
     depends_on:
-      postgres:
+      mysql:
         condition: service_healthy
     networks:
       - myfinance
 
 volumes:
-  postgres_data:
+  mysql_data:
 
 networks:
   myfinance:

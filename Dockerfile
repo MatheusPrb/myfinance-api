@@ -4,7 +4,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     unzip \
     libonig-dev \
-    libpq-dev \
     libxml2-dev \
     libzip-dev \
     zlib1g-dev \
@@ -12,7 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         bcmath \
         dom \
         mbstring \
-        pdo_pgsql \
+        pdo_mysql \
         xml \
         zip \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
