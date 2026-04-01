@@ -18,9 +18,9 @@ final class UserRepository implements UserRepositoryInterface
         $model = new UserModel;
 
         $model->id = $user->id();
-        $model->nome = $user->name();
+        $model->name = $user->name();
         $model->email = $user->email();
-        $model->senha = $hashedPassword;
+        $model->password = $hashedPassword;
         $model->save();
 
         return $this->toEntity($model);
@@ -30,7 +30,7 @@ final class UserRepository implements UserRepositoryInterface
     {
         return new User(
             $model->id,
-            $model->nome,
+            $model->name,
             $model->email,
             $model->created_at?->toDateTimeImmutable(),
             $model->updated_at?->toDateTimeImmutable(),

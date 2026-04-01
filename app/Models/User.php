@@ -15,30 +15,30 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, HasUuids, Notifiable;
 
-    protected $table = 'usuarios';
+    protected $table = 'users';
 
     protected $fillable = [
-        'nome',
+        'name',
         'email',
-        'senha',
+        'password',
     ];
 
     protected $hidden = [
-        'senha',
+        'password',
         'remember_token',
     ];
 
     protected function casts(): array
     {
         return [
-            'email_verificado_em' => 'datetime',
-            'senha' => 'hashed',
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
         ];
     }
 
     public function getAuthPassword(): string
     {
-        return $this->senha;
+        return $this->password;
     }
 
     protected static function newFactory(): UserFactory
@@ -46,8 +46,8 @@ class User extends Authenticatable
         return UserFactory::new();
     }
 
-    public function transacoes(): HasMany
+    public function transactions(): HasMany
     {
-        return $this->hasMany(Transaction::class, 'usuario_id');
+        return $this->hasMany(Transaction::class, 'user_id');
     }
 }

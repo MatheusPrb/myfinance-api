@@ -15,6 +15,6 @@ final readonly class RegisterUserInput
      */
     public static function fromArray(array $data): self
     {
-        return new self($data['nome'], $data['email'], $data['password']);
+        return new self($data['name'], $data['email'], $data['password']);
     }
 }

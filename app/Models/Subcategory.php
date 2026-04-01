@@ -11,20 +11,20 @@ class Subcategory extends Model
 {
     use HasUuids;
 
-    protected $table = 'subcategorias';
+    protected $table = 'subcategories';
 
     protected $fillable = [
-        'categoria_id',
-        'nome',
+        'category_id',
+        'name',
     ];
 
-    public function categoria(): BelongsTo
+    public function category(): BelongsTo
     {
-        return $this->belongsTo(Category::class, 'categoria_id');
+        return $this->belongsTo(Category::class, 'category_id');
     }
 
-    public function transacoes(): HasMany
+    public function transactions(): HasMany
     {
-        return $this->hasMany(Transaction::class, 'subcategoria_id');
+        return $this->hasMany(Transaction::class, 'subcategory_id');
     }
 }

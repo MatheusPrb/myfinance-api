@@ -10,35 +10,35 @@ class Transaction extends Model
 {
     use HasUuids;
 
-    protected $table = 'transacoes';
+    protected $table = 'transactions';
 
     protected $fillable = [
-        'usuario_id',
-        'categoria_id',
-        'subcategoria_id',
-        'descricao',
-        'valor',
+        'user_id',
+        'category_id',
+        'subcategory_id',
+        'description',
+        'value',
     ];
 
     protected function casts(): array
     {
         return [
-            'valor' => 'decimal:2',
+            'value' => 'decimal:2',
         ];
     }
 
-    public function usuario(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'usuario_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function categoria(): BelongsTo
+    public function category(): BelongsTo
     {
-        return $this->belongsTo(Category::class, 'categoria_id');
+        return $this->belongsTo(Category::class, 'category_id');
     }
 
-    public function subcategoria(): BelongsTo
+    public function subcategory(): BelongsTo
     {
-        return $this->belongsTo(Subcategory::class, 'subcategoria_id');
+        return $this->belongsTo(Subcategory::class, 'subcategory_id');
     }
 }

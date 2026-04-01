@@ -10,19 +10,19 @@ class Category extends Model
 {
     use HasUuids;
 
-    protected $table = 'categorias';
+    protected $table = 'categories';
 
     protected $fillable = [
-        'nome',
+        'name',
     ];
 
-    public function subcategorias(): HasMany
+    public function subcategories(): HasMany
     {
-        return $this->hasMany(Subcategory::class, 'categoria_id');
+        return $this->hasMany(Subcategory::class, 'category_id');
     }
 
-    public function transacoes(): HasMany
+    public function transactions(): HasMany
     {
-        return $this->hasMany(Transaction::class, 'categoria_id');
+        return $this->hasMany(Transaction::class, 'category_id');
     }
 }

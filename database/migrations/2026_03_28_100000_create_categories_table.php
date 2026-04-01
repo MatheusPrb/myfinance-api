@@ -8,18 +8,17 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('subcategorias', function (Blueprint $table) {
+        Schema::create('categories', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('categoria_id')->constrained('categorias')->cascadeOnDelete();
-            $table->string('nome');
+            $table->string('name');
             $table->timestamps();
 
-            $table->unique(['categoria_id', 'nome']);
+            $table->unique('name');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('subcategorias');
+        Schema::dropIfExists('categories');
     }
 };

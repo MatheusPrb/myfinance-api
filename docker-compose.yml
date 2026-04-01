@@ -1,5 +1,8 @@
+name: myfinance
+
 services:
   app:
+    container_name: myfinance_app
     build:
       context: .
       dockerfile: Dockerfile
@@ -7,12 +10,13 @@ services:
       - .:/var/www/html
     working_dir: /var/www/html
     depends_on:
-      mysql:
+      postgres:
         condition: service_healthy
     networks:
       - myfinance
 
   nginx:
+    container_name: myfinance_nginx
     image: nginx:alpine
     ports:
       - "8080:80"
@@ -24,19 +28,19 @@ services:
     networks:
       - myfinance
 
-  mysql:
-    image: mysql:8.4
+  postgres:
+    container_name: myfinance_postgres
+    image: postgres:16-alpine
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-secret}
-      MYSQL_DATABASE: ${DB_DATABASE:-myfinance}
-      MYSQL_USER: ${DB_USERNAME:-myfinance}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
+      POSTGRES_USER: ${DB_USERNAME:-myfinance}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secret}
+      POSTGRES_DB: ${DB_DATABASE:-myfinance}
     ports:
-      - "3306:3306"
+      - "5432:5432"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -44,22 +48,8 @@ services:
     networks:
       - myfinance
 
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    environment:
-      PMA_HOST: mysql
-      PMA_USER: ${DB_USERNAME:-myfinance}
-      PMA_PASSWORD: ${DB_PASSWORD:-secret}
-    ports:
-      - "8081:80"
-    depends_on:
-      mysql:
-        condition: service_healthy
-    networks:
-      - myfinance
-
 volumes:
-  mysql_data:
+  postgres_data:
 
 networks:
   myfinance:
