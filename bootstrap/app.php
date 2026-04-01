@@ -38,4 +38,12 @@ return Application::configure(basePath: dirname(__DIR__))
                 $e->getStatusCode()
             );
         });
+
+        $exceptions->render(function (\Exception $e) {
+            return ApiResponse::error(
+                $e->getMessage(),
+                [],
+                500
+            );
+        });
     })->create();
