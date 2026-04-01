@@ -9,4 +9,5 @@ class Messages
     public const INVALID_DATA = "Dados inválidos";
     public const LOGIN_SUCCESS = "Login realizado com sucesso";
     public const USER_REGISTERED_SUCCESSFULLY = "Usuário registrado com sucesso";
+    public const INTERNAL_SERVER_ERROR = "Erro interno do servidor";
 }

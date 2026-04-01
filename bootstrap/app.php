@@ -39,9 +39,9 @@ return Application::configure(basePath: dirname(__DIR__))
             );
         });
 
-        $exceptions->render(function (\Exception $e) {
+        $exceptions->render(function (\Throwable $e) {
             return ApiResponse::error(
-                $e->getMessage(),
+                Messages::INTERNAL_SERVER_ERROR,
                 [],
                 500
             );
