@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
 
@@ -39,12 +38,5 @@ final class RegisterUserRequest extends FormRequest
             'password.letters' => 'A senha deve conter pelo menos uma letra',
             'password.numbers' => 'A senha deve conter pelo menos um número',
         ];
-    }
-
-    protected function failedValidation(Validator $validator): void
-    {
-        // throw new HttpResponseException(
-        //     ApiResponse::error('Os dados enviados são inválidos.', $validator->errors()->toArray(), 422)
-        // );
     }
 }
