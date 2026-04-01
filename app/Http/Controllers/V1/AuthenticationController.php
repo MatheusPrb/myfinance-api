@@ -7,6 +7,7 @@ use App\Application\UseCases\RegisterUser\RegisterUserUseCase;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RegisterUserRequest;
 use App\Http\Responses\ApiResponse;
+use App\Messages\Messages;
 
 class AuthenticationController extends Controller
 {
@@ -17,8 +18,8 @@ class AuthenticationController extends Controller
         $output = $registerUserUseCase->execute($input);
 
         return ApiResponse::success(
-            $output,
             null,
+            Messages::USER_REGISTERED_SUCCESSFULLY,
             201
         );
     }

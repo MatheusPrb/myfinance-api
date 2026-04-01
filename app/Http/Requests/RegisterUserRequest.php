@@ -19,7 +19,7 @@ final class RegisterUserRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email:rfc', 'max:255'],
+            'email' => ['required', 'email:email', 'max:255'],
             'password' => ['required', 'string', Password::min(8)->letters()->numbers()],
         ];
     }
@@ -31,7 +31,7 @@ final class RegisterUserRequest extends FormRequest
             'name.string' => 'Nome inválido',
 
             'email.required' => 'O email é obrigatório',
-            'email.rfc' => 'O email deve ser válido',
+            'email.email' => 'O email deve ser válido',
 
             'password.required' => 'A senha é obrigatória',
             'password.min' => 'A senha deve ter no mínimo 8 caracteres',
