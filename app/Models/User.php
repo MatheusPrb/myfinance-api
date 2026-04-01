@@ -46,8 +46,8 @@ class User extends Authenticatable
         return UserFactory::new();
     }
 
-    public function transactions(): HasMany
+    public function expenses(): HasMany
     {
-        return $this->hasMany(Transaction::class, 'user_id');
+        return $this->hasMany(Expense::class, 'user_id');
     }
 }

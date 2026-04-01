@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('transactions', function (Blueprint $table) {
+        Schema::create('expenses', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignUuid('category_id')->constrained('categories')->restrictOnDelete();
@@ -21,6 +21,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('transactions');
+        Schema::dropIfExists('expenses');
     }
 };

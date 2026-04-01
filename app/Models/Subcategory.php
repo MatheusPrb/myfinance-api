@@ -23,8 +23,8 @@ class Subcategory extends Model
         return $this->belongsTo(Category::class, 'category_id');
     }
 
-    public function transactions(): HasMany
+    public function expenses(): HasMany
     {
-        return $this->hasMany(Transaction::class, 'subcategory_id');
+        return $this->hasMany(Expense::class, 'subcategory_id');
     }
 }

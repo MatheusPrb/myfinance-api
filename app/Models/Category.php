@@ -21,8 +21,8 @@ class Category extends Model
         return $this->hasMany(Subcategory::class, 'category_id');
     }
 
-    public function transactions(): HasMany
+    public function expenses(): HasMany
     {
-        return $this->hasMany(Transaction::class, 'category_id');
+        return $this->hasMany(Expense::class, 'category_id');
     }
 }
