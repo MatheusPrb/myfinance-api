@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\V1;
 
+use App\Application\UseCases\LoginUser\LoginUserInput;
+use App\Application\UseCases\LoginUser\LoginUserUseCase;
 use App\Application\UseCases\RegisterUser\RegisterUserInput;
 use App\Application\UseCases\RegisterUser\RegisterUserUseCase;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\LoginUserRequest;
 use App\Http\Requests\RegisterUserRequest;
 use App\Http\Responses\ApiResponse;
 use App\Messages\Messages;
@@ -15,12 +18,25 @@ class AuthenticationController extends Controller
     {
         $input = RegisterUserInput::fromArray($request->validated());
 
-        $output = $registerUserUseCase->execute($input);
+        $registerUserUseCase->execute($input);
 
         return ApiResponse::success(
             null,
             Messages::USER_REGISTERED_SUCCESSFULLY,
             201
+        );
+    }
+
+    public function login(LoginUserRequest $request, LoginUserUseCase $loginUserUseCase)
+    {
+        $input = LoginUserInput::fromArray($request->validated());
+
+        $output = $loginUserUseCase->execute($input);
+
+        return ApiResponse::success(
+            $output->token,
+            Messages::LOGIN_SUCCESS,
+            200
         );
     }
 }

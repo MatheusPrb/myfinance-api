@@ -13,6 +13,20 @@ final class UserRepository implements UserRepositoryInterface
         return UserModel::query()->where('email', $email)->exists();
     }
 
+    public function findWithPasswordHashByEmail(string $email): ?array
+    {
+        $model = UserModel::query()->where('email', $email)->first();
+
+        if ($model === null) {
+            return null;
+        }
+
+        return [
+            'user' => $this->toEntity($model),
+            'passwordHash' => (string) $model->getRawOriginal('password'),
+        ];
+    }
+
     public function create(User $user, string $hashedPassword): User
     {
         $model = new UserModel;

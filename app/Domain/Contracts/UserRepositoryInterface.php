@@ -7,5 +7,6 @@ use App\Domain\Entities\User;
 interface UserRepositoryInterface
 {
     public function existsByEmail(string $email): bool;
+    public function findWithPasswordHashByEmail(string $email): ?array;
     public function create(User $user, string $hashedPassword): User;
 }
