@@ -10,7 +10,6 @@ return new class extends Migration
     {
         Schema::create('expenses', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignUuid('category_id')->constrained('categories')->restrictOnDelete();
             $table->foreignUuid('subcategory_id')->nullable()->constrained('subcategories')->nullOnDelete();
             $table->text('description')->nullable();
