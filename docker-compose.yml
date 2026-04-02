@@ -9,6 +9,12 @@ services:
     volumes:
       - .:/var/www/html
     working_dir: /var/www/html
+    environment:
+      - XDEBUG_MODE=debug,coverage
+      - XDEBUG_HOST=host.docker.internal
+      - XDEBUG_PORT=9003
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       postgres:
         condition: service_healthy
