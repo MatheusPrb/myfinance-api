@@ -10,4 +10,6 @@ class Messages
     public const LOGIN_SUCCESS = "Login realizado com sucesso";
     public const USER_REGISTERED_SUCCESSFULLY = "Usuário registrado com sucesso";
     public const INTERNAL_SERVER_ERROR = "Erro interno do servidor";
+    public const EXPENSE_CREATED = "Gasto registrado com sucesso";
+    public const SUBCATEGORY_DOES_NOT_BELONG_TO_CATEGORY = "A subcategoria não pertence à categoria informada";
 }

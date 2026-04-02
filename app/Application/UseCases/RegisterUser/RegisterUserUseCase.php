@@ -5,9 +5,9 @@ namespace App\Application\UseCases\RegisterUser;
 use App\Domain\Contracts\PasswordHasherInterface;
 use App\Domain\Contracts\UserRepositoryInterface;
 use App\Domain\Entities\User;
+use App\Helper\Uuid;
 use App\Domain\Exceptions\EmailAlreadyRegisteredException;
 use App\Messages\Messages;
-use Illuminate\Support\Str;
 
 final class RegisterUserUseCase
 {
@@ -23,7 +23,7 @@ final class RegisterUserUseCase
         }
 
         $hashed = $this->hasher->hash($input->password);
-        $id = (string) Str::uuid();
+        $id = Uuid::generate();
 
         $user = new User(
             $id,

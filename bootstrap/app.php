@@ -3,6 +3,7 @@
 use App\Domain\Exceptions\DomainException;
 use App\Http\Responses\ApiResponse;
 use App\Messages\Messages;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -16,7 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->redirectGuestsTo(fn () => null);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(function ($request, Throwable $e) {
@@ -39,8 +40,17 @@ return Application::configure(basePath: dirname(__DIR__))
             );
         });
 
+        $exceptions->render(function (AuthenticationException $e) {
+            return ApiResponse::error(
+                $e->getMessage(),
+                [],
+                401
+            );
+        });
+
         $exceptions->render(function (\Throwable $e) {
             return ApiResponse::error(
+                // $e->getMessage(),
                 Messages::INTERNAL_SERVER_ERROR,
                 [],
                 500
