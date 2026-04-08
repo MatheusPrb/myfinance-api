@@ -175,6 +175,38 @@
       "metaSortKey": -1699999999998
     },
     {
+      "_id": "req_expenses_summary_myfinance",
+      "parentId": "fld_expenses_myfinance",
+      "_type": "request",
+      "name": "Spending summary",
+      "description": "GET /api/v1/expenses/summary — total geral e soma por categoria do usuário autenticado.",
+      "url": "{{ _.base_url }}/api/v1/expenses/summary",
+      "method": "GET",
+      "body": {},
+      "headers": [
+        {
+          "id": "pair_accept_json_exp_summary",
+          "name": "Accept",
+          "value": "application/json",
+          "description": ""
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.bearer_token }}",
+        "disabled": false
+      },
+      "parameters": [],
+      "pathParameters": [],
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "metaSortKey": -1699999999997
+    },
+    {
       "_id": "req_expenses_list_myfinance",
       "parentId": "fld_expenses_myfinance",
       "_type": "request",
@@ -219,7 +251,7 @@
       "settingEncodeUrl": true,
       "settingRebuildPath": true,
       "settingFollowRedirects": "global",
-      "metaSortKey": -1699999999997
+      "metaSortKey": -1699999999996
     },
     {
       "_id": "req_expenses_show_myfinance",
@@ -251,7 +283,7 @@
       "settingEncodeUrl": true,
       "settingRebuildPath": true,
       "settingFollowRedirects": "global",
-      "metaSortKey": -1699999999996
+      "metaSortKey": -1699999999995
     },
     {
       "_id": "req_expenses_create_myfinance",
@@ -292,7 +324,7 @@
       "settingEncodeUrl": true,
       "settingRebuildPath": true,
       "settingFollowRedirects": "global",
-      "metaSortKey": -1699999999995
+      "metaSortKey": -1699999999994
     }
   ]
 }

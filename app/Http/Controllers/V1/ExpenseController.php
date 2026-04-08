@@ -8,12 +8,15 @@ use App\Application\UseCases\GetExpenseById\GetExpenseByIdInput;
 use App\Application\UseCases\GetExpenseById\GetExpenseByIdUseCase;
 use App\Application\UseCases\ListExpenses\ListExpensesInput;
 use App\Application\UseCases\ListExpenses\ListExpensesUseCase;
+use App\Application\UseCases\SummarizeSpending\SummarizeSpendingInput;
+use App\Application\UseCases\SummarizeSpending\SummarizeSpendingUseCase;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateExpenseRequest;
 use App\Http\Requests\ListExpensesRequest;
 use App\Http\Requests\ShowExpenseRequest;
 use App\Http\Responses\ApiResponse;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class ExpenseController extends Controller
 {
@@ -29,6 +32,14 @@ class ExpenseController extends Controller
         );
 
         $output = $listExpensesUseCase->execute($input);
+
+        return ApiResponse::success($output->toArray());
+    }
+
+    public function summary(Request $request, SummarizeSpendingUseCase $summarizeSpendingUseCase): JsonResponse
+    {
+        $input = new SummarizeSpendingInput($request->user()->id);
+        $output = $summarizeSpendingUseCase->execute($input);
 
         return ApiResponse::success($output->toArray());
     }

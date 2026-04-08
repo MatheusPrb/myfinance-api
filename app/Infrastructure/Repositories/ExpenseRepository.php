@@ -4,6 +4,7 @@ namespace App\Infrastructure\Repositories;
 
 use App\Domain\Contracts\ExpenseRepositoryInterface;
 use App\Domain\Entities\Expense;
+use App\Helper\Money;
 use App\Models\Expense as ExpenseModel;
 
 final class ExpenseRepository implements ExpenseRepositoryInterface
@@ -56,6 +57,39 @@ final class ExpenseRepository implements ExpenseRepositoryInterface
         ;
 
         return $model !== null ? $this->toEntity($model) : null;
+    }
+
+    public function spendingSummaryByUserId(string $userId): array
+    {
+        $rows = ExpenseModel::query()
+            ->where('expenses.user_id', $userId)
+            ->join('categories', 'categories.id', '=', 'expenses.category_id')
+            ->selectRaw('expenses.category_id as category_id')
+            ->addSelect('categories.name as category_name')
+            ->selectRaw('SUM(expenses.value) as total')
+            ->groupBy('expenses.category_id', 'categories.id', 'categories.name')
+            ->orderByRaw('SUM(expenses.value) DESC')
+            ->get()
+        ;
+
+        $byCategory = [];
+        foreach ($rows as $row) {
+            $byCategory[] = [
+                'category_id' => $row->category_id,
+                'category_name' => $row->category_name,
+                'total' => Money::format($row->total),
+            ];
+        }
+
+        $total = ExpenseModel::query()
+            ->where('user_id', $userId)
+            ->sum('value')
+        ;
+
+        return [
+            'total' => Money::format($total ?? 0),
+            'by_category' => $byCategory,
+        ];
     }
 
     private function toEntity(ExpenseModel $model): Expense
