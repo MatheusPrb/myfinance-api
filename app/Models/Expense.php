@@ -5,15 +5,22 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
 
 class Expense extends Model
 {
     use HasUuids;
 
+    public function newUniqueId(): string
+    {
+        return (string) Str::uuid();
+    }
+
     protected $table = 'expenses';
 
     protected $fillable = [
         'id',
+        'user_id',
         'category_id',
         'subcategory_id',
         'description',

@@ -8,6 +8,7 @@ final class Expense
 {
     public function __construct(
         private string $id,
+        private string $userId,
         private string $categoryId,
         private ?string $subcategoryId,
         private ?string $description,
@@ -19,6 +20,11 @@ final class Expense
     public function id(): string
     {
         return $this->id;
+    }
+
+    public function userId(): string
+    {
+        return $this->userId;
     }
 
     public function categoryId(): string

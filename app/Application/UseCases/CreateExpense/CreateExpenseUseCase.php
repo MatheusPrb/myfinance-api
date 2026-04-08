@@ -27,6 +27,7 @@ final class CreateExpenseUseCase
 
         $expense = new Expense(
             $id,
+            $input->userId,
             $input->categoryId,
             $input->subcategoryId,
             $input->description,

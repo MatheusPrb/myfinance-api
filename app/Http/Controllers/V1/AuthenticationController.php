@@ -10,7 +10,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginUserRequest;
 use App\Http\Requests\RegisterUserRequest;
 use App\Http\Responses\ApiResponse;
-use App\Messages\Messages;
 
 class AuthenticationController extends Controller
 {
@@ -20,11 +19,7 @@ class AuthenticationController extends Controller
 
         $registerUserUseCase->execute($input);
 
-        return ApiResponse::success(
-            null,
-            Messages::USER_REGISTERED_SUCCESSFULLY,
-            201
-        );
+        return ApiResponse::success(null, 201);
     }
 
     public function login(LoginUserRequest $request, LoginUserUseCase $loginUserUseCase)
@@ -33,10 +28,6 @@ class AuthenticationController extends Controller
 
         $output = $loginUserUseCase->execute($input);
 
-        return ApiResponse::success(
-            $output->token,
-            Messages::LOGIN_SUCCESS,
-            200
-        );
+        return ApiResponse::success($output->token);
     }
 }

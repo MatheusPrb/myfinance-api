@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Application\UseCases\CreateExpense;
+namespace App\Application\UseCases\GetExpenseById;
 
 use App\Application\Presenters\ExpensePresenter;
 use App\Domain\Entities\Expense;
 
-final readonly class CreateExpenseOutput
+final readonly class GetExpenseByIdOutput
 {
     public function __construct(
-        public readonly Expense $expense,
+        public Expense $expense,
     ) {}
 
     /**

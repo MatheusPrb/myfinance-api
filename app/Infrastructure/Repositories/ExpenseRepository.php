@@ -13,6 +13,7 @@ final class ExpenseRepository implements ExpenseRepositoryInterface
         $model = new ExpenseModel;
 
         $model->id = $expense->id();
+        $model->user_id = $expense->userId();
         $model->category_id = $expense->categoryId();
         $model->subcategory_id = $expense->subcategoryId();
         $model->description = $expense->description();
@@ -22,10 +23,46 @@ final class ExpenseRepository implements ExpenseRepositoryInterface
         return $this->toEntity($model);
     }
 
+    public function paginateByUserId(string $userId, int $page, int $perPage): array
+    {
+        $paginator = ExpenseModel::query()
+            ->where('user_id', $userId)
+            ->orderByDesc('created_at')
+            ->paginate(perPage: $perPage, page: $page)
+        ;
+
+        $items = [];
+        foreach ($paginator->items() as $model) {
+            $items[] = $this->toEntity($model);
+        }
+
+        return [
+            'items' => $items,
+            'total' => $paginator->total(),
+            'per_page' => $paginator->perPage(),
+            'current_page' => $paginator->currentPage(),
+            'last_page' => $paginator->lastPage(),
+            'next_page_url' => $paginator->nextPageUrl(),
+            'prev_page_url' => $paginator->previousPageUrl(),
+        ];
+    }
+
+    public function findByIdAndUserId(string $expenseId, string $userId): ?Expense
+    {
+        $model = ExpenseModel::query()
+            ->where('id', $expenseId)
+            ->where('user_id', $userId)
+            ->first()
+        ;
+
+        return $model !== null ? $this->toEntity($model) : null;
+    }
+
     private function toEntity(ExpenseModel $model): Expense
     {
         return new Expense(
             $model->id,
+            $model->user_id,
             $model->category_id,
             $model->subcategory_id,
             $model->description,

@@ -1,0 +1,298 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-04-08T00:00:00.000Z",
+  "__export_source": "cursor-agent",
+  "resources": [
+    {
+      "_id": "wrk_myfinance_api",
+      "_type": "workspace",
+      "name": "MyFinance API",
+      "description": "Coleção da API MyFinance. Com Docker Compose a API fica em http://localhost:8080 (nginx). Com `php artisan serve`, use http://localhost:8000."
+    },
+    {
+      "_id": "jar_myfinance_api",
+      "_type": "cookie_jar",
+      "parentId": "wrk_myfinance_api",
+      "name": "Default Jar",
+      "cookies": []
+    },
+    {
+      "_id": "env_base_myfinance",
+      "_type": "environment",
+      "parentId": "wrk_myfinance_api",
+      "name": "Base Environment",
+      "data": {
+        "base_url": "http://localhost:8080",
+        "bearer_token": "",
+        "expense_id": "",
+        "category_id": "1bfd4e71-8ff1-475e-9f0e-483a902979f5"
+      },
+      "dataPropertyOrder": {
+        "&": ["base_url", "bearer_token", "category_id", "expense_id"]
+      },
+      "color": null,
+      "isPrivate": false,
+      "metaSortKey": 1700000000000
+    },
+    {
+      "_id": "env_local_myfinance",
+      "_type": "environment",
+      "parentId": "env_base_myfinance",
+      "name": "Local (Docker)",
+      "data": {
+        "base_url": "http://localhost:8080"
+      },
+      "dataPropertyOrder": {
+        "&": ["base_url"]
+      },
+      "color": "#4caf50",
+      "isPrivate": false,
+      "metaSortKey": 1700000000001
+    },
+    {
+      "_id": "env_artisan_myfinance",
+      "_type": "environment",
+      "parentId": "env_base_myfinance",
+      "name": "php artisan serve",
+      "data": {
+        "base_url": "http://localhost:8000"
+      },
+      "dataPropertyOrder": {
+        "&": ["base_url"]
+      },
+      "color": "#2196f3",
+      "isPrivate": false,
+      "metaSortKey": 1700000000002
+    },
+    {
+      "_id": "env_production_myfinance",
+      "_type": "environment",
+      "parentId": "env_base_myfinance",
+      "name": "Production",
+      "data": {
+        "base_url": "https://api.seudominio.com"
+      },
+      "dataPropertyOrder": {
+        "&": ["base_url"]
+      },
+      "color": "#f44336",
+      "isPrivate": false,
+      "metaSortKey": 1700000000003
+    },
+    {
+      "_id": "fld_v1_myfinance",
+      "_type": "request_group",
+      "parentId": "wrk_myfinance_api",
+      "name": "v1",
+      "description": "Rotas versionadas (prefixo /api aplicado pelo Laravel em routes/api.php).",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1700000000000
+    },
+    {
+      "_id": "req_register_myfinance",
+      "parentId": "fld_v1_myfinance",
+      "_type": "request",
+      "name": "Register",
+      "description": "POST /api/v1/register — cria usuário (name, email, password).",
+      "url": "{{ _.base_url }}/api/v1/register",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Maria Silva\",\n  \"email\": \"maria@example.com\",\n  \"password\": \"senhaSegura1\"\n}"
+      },
+      "headers": [
+        {
+          "id": "pair_accept_json",
+          "name": "Accept",
+          "value": "application/json",
+          "description": ""
+        },
+        {
+          "id": "pair_content_type",
+          "name": "Content-Type",
+          "value": "application/json",
+          "description": ""
+        }
+      ],
+      "authentication": {},
+      "parameters": [],
+      "pathParameters": [],
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "metaSortKey": -1700000000000
+    },
+    {
+      "_id": "req_login_myfinance",
+      "parentId": "fld_v1_myfinance",
+      "_type": "request",
+      "name": "Login",
+      "description": "POST /api/v1/login — retorna token Sanctum em `data` (string). Cole o valor na variável de ambiente `bearer_token` (Base Environment) para usar as rotas autenticadas.",
+      "url": "{{ _.base_url }}/api/v1/login",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"email\": \"maria@example.com\",\n  \"password\": \"senhaSegura1\"\n}"
+      },
+      "headers": [
+        {
+          "id": "pair_accept_json_login",
+          "name": "Accept",
+          "value": "application/json",
+          "description": ""
+        },
+        {
+          "id": "pair_content_type_login",
+          "name": "Content-Type",
+          "value": "application/json",
+          "description": ""
+        }
+      ],
+      "authentication": {},
+      "parameters": [],
+      "pathParameters": [],
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "metaSortKey": -1699999999999
+    },
+    {
+      "_id": "fld_expenses_myfinance",
+      "_type": "request_group",
+      "parentId": "fld_v1_myfinance",
+      "name": "Expenses",
+      "description": "Gastos (Sanctum). Após o Login, defina `bearer_token`. Para \"Get expense by id\", use o `id` retornado na listagem ou no create em `expense_id`.",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1699999999998
+    },
+    {
+      "_id": "req_expenses_list_myfinance",
+      "parentId": "fld_expenses_myfinance",
+      "_type": "request",
+      "name": "List expenses (paginated)",
+      "description": "GET /api/v1/expenses — lista paginada dos gastos do usuário autenticado. Query: `page` (padrão 1), `per_page` (padrão 15, máx. 100).",
+      "url": "{{ _.base_url }}/api/v1/expenses",
+      "method": "GET",
+      "body": {},
+      "headers": [
+        {
+          "id": "pair_accept_json_exp_list",
+          "name": "Accept",
+          "value": "application/json",
+          "description": ""
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.bearer_token }}",
+        "disabled": false
+      },
+      "parameters": [
+        {
+          "id": "pair_exp_page",
+          "name": "page",
+          "value": "1",
+          "description": "",
+          "disabled": false
+        },
+        {
+          "id": "pair_exp_per_page",
+          "name": "per_page",
+          "value": "15",
+          "description": "",
+          "disabled": false
+        }
+      ],
+      "pathParameters": [],
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "metaSortKey": -1699999999997
+    },
+    {
+      "_id": "req_expenses_show_myfinance",
+      "parentId": "fld_expenses_myfinance",
+      "_type": "request",
+      "name": "Get expense by id",
+      "description": "GET /api/v1/expenses/{id} — um gasto do usuário. Preencha `expense_id` no ambiente (UUID do gasto).",
+      "url": "{{ _.base_url }}/api/v1/expenses/{{ _.expense_id }}",
+      "method": "GET",
+      "body": {},
+      "headers": [
+        {
+          "id": "pair_accept_json_exp_show",
+          "name": "Accept",
+          "value": "application/json",
+          "description": ""
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.bearer_token }}",
+        "disabled": false
+      },
+      "parameters": [],
+      "pathParameters": [],
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "metaSortKey": -1699999999996
+    },
+    {
+      "_id": "req_expenses_create_myfinance",
+      "parentId": "fld_expenses_myfinance",
+      "_type": "request",
+      "name": "Create expense",
+      "description": "POST /api/v1/expenses — cadastra gasto. Requer categorias (ex.: `php artisan db:seed --class=CategorySeeder`). Ajuste `category_id` no ambiente se necessário.",
+      "url": "{{ _.base_url }}/api/v1/expenses",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"category_id\": \"{{ _.category_id }}\",\n  \"subcategory_id\": \"3fafedf0-c692-4083-aa06-63d3d612dff4\",\n  \"description\": \"Corrida de exemplo\",\n  \"value\": 24.5\n}"
+      },
+      "headers": [
+        {
+          "id": "pair_accept_json_exp_create",
+          "name": "Accept",
+          "value": "application/json",
+          "description": ""
+        },
+        {
+          "id": "pair_content_type_exp_create",
+          "name": "Content-Type",
+          "value": "application/json",
+          "description": ""
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.bearer_token }}",
+        "disabled": false
+      },
+      "parameters": [],
+      "pathParameters": [],
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "metaSortKey": -1699999999995
+    }
+  ]
+}
