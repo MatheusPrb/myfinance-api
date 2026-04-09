@@ -15,6 +15,9 @@ use App\Infrastructure\Repositories\SubcategoryRepository;
 use App\Infrastructure\Repositories\UserRepository;
 use App\Infrastructure\Security\PasswordHasher;
 use App\Models\PersonalAccessToken;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Sanctum\Sanctum;
 
@@ -39,5 +42,23 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
+
+        RateLimiter::for('auth-login', function (Request $request) {
+            $perMinute = app()->environment('testing', 'local') ? 1000 : 5;
+            $email = (string) $request->input('email', '');
+
+            return Limit::perMinute($perMinute)->by($request->ip().':'.$email);
+        });
+
+        RateLimiter::for('auth-register', function (Request $request) {
+            $perMinute = app()->environment('testing', 'local') ? 1000 : 3;
+
+            return Limit::perMinute($perMinute)->by($request->ip());
+        });
+
+        RateLimiter::for('private-api', function (Request $request) {
+            $perMinute = 30;
+            return Limit::perMinute($perMinute)->by($request->user()->id . ':' . $request->ip());
+        });
     }
 }

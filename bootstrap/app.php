@@ -20,6 +20,14 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->redirectGuestsTo(fn () => null);
+
+        $trusted = env('TRUSTED_PROXIES');
+        if (filled($trusted)) {
+            $middleware->trustProxies(
+                at: $trusted === '*' ? '*' : array_map(trim(...), explode(',', $trusted)),
+            );
+        }
+
         $middleware->alias([
             'admin' => EnsureUserIsAdmin::class,
         ]);
