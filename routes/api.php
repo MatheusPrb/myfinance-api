@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\V1\AuthenticationController;
+use App\Http\Controllers\V1\CategoryController;
 use App\Http\Controllers\V1\ExpenseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -16,6 +17,8 @@ Route::middleware('auth:sanctum')->group(function (): void {
     });
 
     Route::prefix('v1')->group(function (): void {
+        Route::get('categories', [CategoryController::class, 'index']);
+        Route::get('categories/{category}/subcategories', [CategoryController::class, 'subcategories']);
         Route::get('expenses/summary', [ExpenseController::class, 'summary']);
         Route::get('expenses', [ExpenseController::class, 'index']);
         Route::get('expenses/{id}', [ExpenseController::class, 'show']);

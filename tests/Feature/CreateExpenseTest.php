@@ -43,8 +43,8 @@ class CreateExpenseTest extends TestCase
         ]);
 
         $response->assertCreated()
-            ->assertJsonPath('data.category_id', $category->id)
-            ->assertJsonPath('data.subcategory_id', $subcategory->id)
+            ->assertJsonPath('data.category_name', 'Test Category')
+            ->assertJsonPath('data.subcategory_name', 'Test Sub')
             ->assertJsonPath('data.description', 'Coffee');
 
         $this->assertDatabaseHas('expenses', [

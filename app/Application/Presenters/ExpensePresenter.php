@@ -14,8 +14,8 @@ final class ExpensePresenter
         return [
             'id' => $expense->id(),
             'user_id' => $expense->userId(),
-            'category_id' => $expense->categoryId(),
-            'subcategory_id' => $expense->subcategoryId(),
+            'category_name' => $expense->categoryName() ?? '',
+            'subcategory_name' => $expense->subcategoryName(),
             'description' => $expense->description(),
             'value' => $expense->value(),
             'created_at' => $expense->createdAt()?->format(DATE_ATOM),

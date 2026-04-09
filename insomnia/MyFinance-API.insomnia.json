@@ -165,6 +165,80 @@
       "metaSortKey": -1699999999999
     },
     {
+      "_id": "fld_categories_myfinance",
+      "_type": "request_group",
+      "parentId": "fld_v1_myfinance",
+      "name": "Categories",
+      "description": "Categorias e subcategorias (Sanctum). Use `category_id` no ambiente para subcategorias.",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1699999999998.5
+    },
+    {
+      "_id": "req_categories_list_myfinance",
+      "parentId": "fld_categories_myfinance",
+      "_type": "request",
+      "name": "List categories",
+      "description": "GET /api/v1/categories — id e nome, ordenado por nome.",
+      "url": "{{ _.base_url }}/api/v1/categories",
+      "method": "GET",
+      "body": {},
+      "headers": [
+        {
+          "id": "pair_accept_json_cat_list",
+          "name": "Accept",
+          "value": "application/json",
+          "description": ""
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.bearer_token }}",
+        "disabled": false
+      },
+      "parameters": [],
+      "pathParameters": [],
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "metaSortKey": -1699999999998.4
+    },
+    {
+      "_id": "req_subcategories_list_myfinance",
+      "parentId": "fld_categories_myfinance",
+      "_type": "request",
+      "name": "List subcategories by category",
+      "description": "GET /api/v1/categories/{category}/subcategories — subcategorias da categoria (UUID em `category_id`).",
+      "url": "{{ _.base_url }}/api/v1/categories/{{ _.category_id }}/subcategories",
+      "method": "GET",
+      "body": {},
+      "headers": [
+        {
+          "id": "pair_accept_json_sub_list",
+          "name": "Accept",
+          "value": "application/json",
+          "description": ""
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.bearer_token }}",
+        "disabled": false
+      },
+      "parameters": [],
+      "pathParameters": [],
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "metaSortKey": -1699999999998.3
+    },
+    {
       "_id": "fld_expenses_myfinance",
       "_type": "request_group",
       "parentId": "fld_v1_myfinance",

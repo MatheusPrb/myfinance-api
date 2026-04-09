@@ -2,12 +2,14 @@
 
 namespace App\Providers;
 
+use App\Domain\Contracts\CategoryRepositoryInterface;
 use App\Domain\Contracts\ExpenseRepositoryInterface;
 use App\Domain\Contracts\PasswordHasherInterface;
 use App\Domain\Contracts\PersonalAccessTokenIssuerInterface;
 use App\Domain\Contracts\SubcategoryRepositoryInterface;
 use App\Domain\Contracts\UserRepositoryInterface;
 use App\Infrastructure\Auth\SanctumPersonalAccessTokenIssuer;
+use App\Infrastructure\Repositories\CategoryRepository;
 use App\Infrastructure\Repositories\ExpenseRepository;
 use App\Infrastructure\Repositories\SubcategoryRepository;
 use App\Infrastructure\Repositories\UserRepository;
@@ -25,6 +27,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
         $this->app->bind(SubcategoryRepositoryInterface::class, SubcategoryRepository::class);
+        $this->app->bind(CategoryRepositoryInterface::class, CategoryRepository::class);
         $this->app->bind(ExpenseRepositoryInterface::class, ExpenseRepository::class);
         $this->app->bind(PasswordHasherInterface::class, PasswordHasher::class);
         $this->app->bind(PersonalAccessTokenIssuerInterface::class, SanctumPersonalAccessTokenIssuer::class);

@@ -15,4 +15,23 @@ final class SubcategoryRepository implements SubcategoryRepositoryInterface
             ->exists()
         ;
     }
+
+    public function listByCategoryIdOrderedByName(string $categoryId): array
+    {
+        $models = SubcategoryModel::query()
+            ->where('category_id', $categoryId)
+            ->orderBy('name')
+            ->get(['id', 'name'])
+        ;
+
+        $items = [];
+        foreach ($models as $subcategory) {
+            $items[] = [
+                'id' => $subcategory->id,
+                'name' => $subcategory->name,
+            ];
+        }
+
+        return $items;
+    }
 }

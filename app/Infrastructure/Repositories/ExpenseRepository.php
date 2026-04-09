@@ -20,6 +20,7 @@ final class ExpenseRepository implements ExpenseRepositoryInterface
         $model->description = $expense->description();
         $model->value = $expense->value();
         $model->save();
+        $model->load(['category', 'subcategory']);
 
         return $this->toEntity($model);
     }
@@ -28,6 +29,7 @@ final class ExpenseRepository implements ExpenseRepositoryInterface
     {
         $paginator = ExpenseModel::query()
             ->where('user_id', $userId)
+            ->with(['category', 'subcategory'])
             ->orderByDesc('created_at')
             ->paginate(perPage: $perPage, page: $page)
         ;
@@ -51,6 +53,7 @@ final class ExpenseRepository implements ExpenseRepositoryInterface
     public function findByIdAndUserId(string $expenseId, string $userId): ?Expense
     {
         $model = ExpenseModel::query()
+            ->with(['category', 'subcategory'])
             ->where('id', $expenseId)
             ->where('user_id', $userId)
             ->first()
@@ -94,6 +97,8 @@ final class ExpenseRepository implements ExpenseRepositoryInterface
 
     private function toEntity(ExpenseModel $model): Expense
     {
+        $model->loadMissing(['category', 'subcategory']);
+
         return new Expense(
             $model->id,
             $model->user_id,
@@ -103,6 +108,8 @@ final class ExpenseRepository implements ExpenseRepositoryInterface
             (string) $model->value,
             $model->created_at?->toDateTimeImmutable(),
             $model->updated_at?->toDateTimeImmutable(),
+            $model->category?->name,
+            $model->subcategory?->name,
         );
     }
 }

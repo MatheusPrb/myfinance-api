@@ -56,6 +56,8 @@ class ListAndGetExpenseTest extends TestCase
             ->assertJsonPath('data.meta.per_page', 1)
             ->assertJsonPath('data.meta.current_page', 1)
             ->assertJsonPath('data.items.0.description', 'Mine')
+            ->assertJsonPath('data.items.0.category_name', 'Cat')
+            ->assertJsonPath('data.items.0.subcategory_name', 'Sub')
         ;
     }
 
@@ -78,6 +80,8 @@ class ListAndGetExpenseTest extends TestCase
         $response->assertOk()
             ->assertJsonPath('data.id', $expense->id)
             ->assertJsonPath('data.description', 'Lunch')
+            ->assertJsonPath('data.category_name', 'Cat')
+            ->assertJsonPath('data.subcategory_name', null)
         ;
     }
 

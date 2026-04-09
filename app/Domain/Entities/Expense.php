@@ -15,6 +15,8 @@ final class Expense
         private string $value,
         private ?DateTimeImmutable $createdAt = null,
         private ?DateTimeImmutable $updatedAt = null,
+        private ?string $categoryName = null,
+        private ?string $subcategoryName = null,
     ) {}
 
     public function id(): string
@@ -35,6 +37,16 @@ final class Expense
     public function subcategoryId(): ?string
     {
         return $this->subcategoryId;
+    }
+
+    public function categoryName(): ?string
+    {
+        return $this->categoryName;
+    }
+
+    public function subcategoryName(): ?string
+    {
+        return $this->subcategoryName;
     }
 
     public function description(): ?string
