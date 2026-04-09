@@ -29,4 +29,14 @@ final class CategoryRepository implements CategoryRepositoryInterface
     {
         return CategoryModel::query()->where('id', $id)->exists();
     }
+
+    public function create(string $name): array
+    {
+        $model = CategoryModel::query()->create(['name' => $name]);
+
+        return [
+            'id' => $model->id,
+            'name' => $model->name,
+        ];
+    }
 }

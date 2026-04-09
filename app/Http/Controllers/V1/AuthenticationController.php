@@ -10,6 +10,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginUserRequest;
 use App\Http\Requests\RegisterUserRequest;
 use App\Http\Responses\ApiResponse;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class AuthenticationController extends Controller
 {
@@ -29,5 +31,12 @@ class AuthenticationController extends Controller
         $output = $loginUserUseCase->execute($input);
 
         return ApiResponse::success($output->token);
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()?->currentAccessToken()?->delete();
+
+        return ApiResponse::success(null);
     }
 }

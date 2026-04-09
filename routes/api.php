@@ -17,11 +17,18 @@ Route::middleware('auth:sanctum')->group(function (): void {
     });
 
     Route::prefix('v1')->group(function (): void {
+        Route::post('logout', [AuthenticationController::class, 'logout']);
+
         Route::get('categories', [CategoryController::class, 'index']);
         Route::get('categories/{category}/subcategories', [CategoryController::class, 'subcategories']);
         Route::get('expenses/summary', [ExpenseController::class, 'summary']);
         Route::get('expenses', [ExpenseController::class, 'index']);
         Route::get('expenses/{id}', [ExpenseController::class, 'show']);
         Route::post('expenses', [ExpenseController::class, 'store']);
+
+        Route::middleware('admin')->group(function (): void {
+            Route::post('categories', [CategoryController::class, 'store']);
+            Route::post('categories/{category}/subcategories', [CategoryController::class, 'storeSubcategory']);
+        });
     });
 });

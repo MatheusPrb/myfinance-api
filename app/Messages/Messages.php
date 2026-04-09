@@ -11,4 +11,5 @@ class Messages
     public const EXPENSE_NOT_FOUND = "Gasto não encontrado";
     public const CATEGORY_NOT_FOUND = "Categoria não encontrada";
     public const SUBCATEGORY_DOES_NOT_BELONG_TO_CATEGORY = "A subcategoria não pertence à categoria informada";
+    public const FORBIDDEN_NOT_ADMIN = "Falha ao validar usuário";
 }

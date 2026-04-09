@@ -165,11 +165,43 @@
       "metaSortKey": -1699999999999
     },
     {
+      "_id": "req_logout_myfinance",
+      "parentId": "fld_v1_myfinance",
+      "_type": "request",
+      "name": "Logout",
+      "description": "POST /api/v1/logout — revoga o token Sanctum atual. Requer `bearer_token`. Após isso, use Login de novo.",
+      "url": "{{ _.base_url }}/api/v1/logout",
+      "method": "POST",
+      "body": {},
+      "headers": [
+        {
+          "id": "pair_accept_json_logout",
+          "name": "Accept",
+          "value": "application/json",
+          "description": ""
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.bearer_token }}",
+        "disabled": false
+      },
+      "parameters": [],
+      "pathParameters": [],
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "metaSortKey": -1699999999998.75
+    },
+    {
       "_id": "fld_categories_myfinance",
       "_type": "request_group",
       "parentId": "fld_v1_myfinance",
       "name": "Categories",
-      "description": "Categorias e subcategorias (Sanctum). Use `category_id` no ambiente para subcategorias.",
+      "description": "Categorias e subcategorias (Sanctum). Use `category_id` no ambiente para rotas por categoria. **Create category** e **Create subcategory** exigem usuário com `is_admin = true`.",
       "environment": {},
       "environmentPropertyOrder": null,
       "metaSortKey": -1699999999998.5
@@ -207,6 +239,47 @@
       "metaSortKey": -1699999999998.4
     },
     {
+      "_id": "req_categories_create_myfinance",
+      "parentId": "fld_categories_myfinance",
+      "_type": "request",
+      "name": "Create category (admin)",
+      "description": "POST /api/v1/categories — cadastra categoria. Requer Bearer e usuário admin (`is_admin`). Corpo: `{ \"name\": \"...\" }`. Resposta 201 em `data`: `id`, `name`.",
+      "url": "{{ _.base_url }}/api/v1/categories",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Nova categoria\"\n}"
+      },
+      "headers": [
+        {
+          "id": "pair_accept_json_cat_create",
+          "name": "Accept",
+          "value": "application/json",
+          "description": ""
+        },
+        {
+          "id": "pair_content_type_cat_create",
+          "name": "Content-Type",
+          "value": "application/json",
+          "description": ""
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.bearer_token }}",
+        "disabled": false
+      },
+      "parameters": [],
+      "pathParameters": [],
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "metaSortKey": -1699999999998.38
+    },
+    {
       "_id": "req_subcategories_list_myfinance",
       "parentId": "fld_categories_myfinance",
       "_type": "request",
@@ -237,6 +310,47 @@
       "settingRebuildPath": true,
       "settingFollowRedirects": "global",
       "metaSortKey": -1699999999998.3
+    },
+    {
+      "_id": "req_subcategories_create_myfinance",
+      "parentId": "fld_categories_myfinance",
+      "_type": "request",
+      "name": "Create subcategory (admin)",
+      "description": "POST /api/v1/categories/{category}/subcategories — cadastra subcategoria na categoria (UUID em `category_id`). Requer admin. Corpo: `{ \"name\": \"...\" }`. Resposta 201: `id`, `name`, `category_id`.",
+      "url": "{{ _.base_url }}/api/v1/categories/{{ _.category_id }}/subcategories",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Nova subcategoria\"\n}"
+      },
+      "headers": [
+        {
+          "id": "pair_accept_json_sub_create",
+          "name": "Accept",
+          "value": "application/json",
+          "description": ""
+        },
+        {
+          "id": "pair_content_type_sub_create",
+          "name": "Content-Type",
+          "value": "application/json",
+          "description": ""
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.bearer_token }}",
+        "disabled": false
+      },
+      "parameters": [],
+      "pathParameters": [],
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "metaSortKey": -1699999999998.28
     },
     {
       "_id": "fld_expenses_myfinance",

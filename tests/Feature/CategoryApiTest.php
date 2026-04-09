@@ -72,4 +72,69 @@ class CategoryApiTest extends TestCase
         $response->assertNotFound()
             ->assertJsonPath('message', Messages::CATEGORY_NOT_FOUND);
     }
+
+    public function test_create_category_returns_403_for_non_admin(): void
+    {
+        Sanctum::actingAs(User::factory()->create(['is_admin' => false]));
+
+        $this->postJson('/api/v1/categories', ['name' => 'Nova'])
+            ->assertForbidden()
+            ->assertJsonPath('message', Messages::FORBIDDEN_NOT_ADMIN)
+        ;
+    }
+
+    public function test_create_category_creates_and_returns_201_for_admin(): void
+    {
+        Sanctum::actingAs(User::factory()->admin()->create());
+
+        $response = $this->postJson('/api/v1/categories', ['name' => 'Nova categoria']);
+
+        $response->assertCreated()
+            ->assertJsonPath('data.name', 'Nova categoria')
+            ->assertJsonStructure(['data' => ['id', 'name']])
+        ;
+
+        $this->assertDatabaseHas('categories', ['name' => 'Nova categoria']);
+    }
+
+    public function test_create_subcategory_returns_403_for_non_admin(): void
+    {
+        Sanctum::actingAs(User::factory()->create(['is_admin' => false]));
+        $cat = Category::query()->create(['name' => 'C']);
+
+        $this->postJson("/api/v1/categories/{$cat->id}/subcategories", ['name' => 'Sub'])
+            ->assertForbidden()
+            ->assertJsonPath('message', Messages::FORBIDDEN_NOT_ADMIN)
+        ;
+    }
+
+    public function test_create_subcategory_creates_for_admin_using_category_in_path(): void
+    {
+        Sanctum::actingAs(User::factory()->admin()->create());
+        $cat = Category::query()->create(['name' => 'C']);
+
+        $response = $this->postJson("/api/v1/categories/{$cat->id}/subcategories", ['name' => 'Sub A']);
+
+        $response->assertCreated()
+            ->assertJsonPath('data.name', 'Sub A')
+            ->assertJsonPath('data.category_id', $cat->id)
+            ->assertJsonStructure(['data' => ['id', 'name', 'category_id']])
+        ;
+
+        $this->assertDatabaseHas('subcategories', [
+            'category_id' => $cat->id,
+            'name' => 'Sub A',
+        ]);
+    }
+
+    public function test_create_subcategory_returns_404_when_category_missing(): void
+    {
+        Sanctum::actingAs(User::factory()->admin()->create());
+        $missingId = '00000000-0000-4000-8000-000000000099';
+
+        $this->postJson("/api/v1/categories/{$missingId}/subcategories", ['name' => 'X'])
+            ->assertNotFound()
+            ->assertJsonPath('message', Messages::CATEGORY_NOT_FOUND)
+        ;
+    }
 }

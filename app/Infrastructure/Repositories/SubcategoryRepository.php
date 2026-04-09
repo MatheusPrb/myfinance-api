@@ -34,4 +34,18 @@ final class SubcategoryRepository implements SubcategoryRepositoryInterface
 
         return $items;
     }
+
+    public function create(string $categoryId, string $name): array
+    {
+        $model = SubcategoryModel::query()->create([
+            'category_id' => $categoryId,
+            'name' => $name,
+        ]);
+
+        return [
+            'id' => $model->id,
+            'name' => $model->name,
+            'category_id' => $model->category_id,
+        ];
+    }
 }

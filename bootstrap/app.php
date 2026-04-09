@@ -1,6 +1,8 @@
 <?php
 
 use App\Domain\Exceptions\DomainException;
+use App\Domain\Exceptions\ForbiddenNotAdminException;
+use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Responses\ApiResponse;
 use App\Messages\Messages;
 use Illuminate\Auth\AuthenticationException;
@@ -18,6 +20,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->redirectGuestsTo(fn () => null);
+        $middleware->alias([
+            'admin' => EnsureUserIsAdmin::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(function ($request, Throwable $e) {
@@ -29,6 +34,14 @@ return Application::configure(basePath: dirname(__DIR__))
                 Messages::INVALID_DATA,
                 $e->errors(),
                 422
+            );
+        });
+
+        $exceptions->render(function (ForbiddenNotAdminException $e) {
+            return ApiResponse::error(
+                $e->getMessage(),
+                [],
+                $e->getStatusCode()
             );
         });
 
