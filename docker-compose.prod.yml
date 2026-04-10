@@ -21,8 +21,6 @@ services:
         condition: service_healthy
     networks:
       - myfinance_prod
-    volumes:
-      - app_storage:/var/www/html/storage
 
   nginx:
     build:
