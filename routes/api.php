@@ -6,12 +6,14 @@ use App\Http\Controllers\V1\ExpenseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('v1')->middleware('throttle:60,1')->group(function (): void {
-    Route::post('register', [AuthenticationController::class, 'register']);
-    Route::post('login', [AuthenticationController::class, 'login']);
+Route::prefix('v1')->group(function (): void {
+    Route::post('register', [AuthenticationController::class, 'register'])
+        ->middleware('throttle:auth-register');
+    Route::post('login', [AuthenticationController::class, 'login'])
+        ->middleware('throttle:auth-login');
 });
 
-Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function (): void {
+Route::middleware(['auth:sanctum', 'throttle:private-api'])->group(function (): void {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
