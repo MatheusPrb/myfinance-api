@@ -27,7 +27,7 @@ RUN composer install \
     --optimize-autoloader \
     --no-scripts
 
-COPY . .
+COPY . /var/www/html
 
 RUN composer dump-autoload --optimize --classmap-authoritative
 
