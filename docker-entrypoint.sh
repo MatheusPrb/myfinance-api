@@ -14,5 +14,8 @@ echo "Ajustando permissões..."
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
+echo "Rodando migrations..."
+php artisan migrate --force
+
 echo "Iniciando aplicação..."
 exec "$@"
