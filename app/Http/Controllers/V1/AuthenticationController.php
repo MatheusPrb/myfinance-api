@@ -49,7 +49,6 @@ class AuthenticationController extends Controller
 
     public function requestPasswordReset(RequestPasswordResetRequest $request, RequestPasswordResetUseCase $useCase): JsonResponse
     {
-
         $input = RequestPasswordResetInput::fromArray($request->validated());
         $useCase->execute($input);
 
