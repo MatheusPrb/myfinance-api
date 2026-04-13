@@ -3,7 +3,9 @@
 namespace App\Application\UseCases\RequestPasswordReset;
 
 use App\Application\Support\PasswordResetCacheKeys;
+use App\Domain\Contracts\CodeRepositoryInterface;
 use App\Domain\Contracts\UserRepositoryInterface;
+use App\Domain\Enums\CodeType;
 use App\Mail\PasswordResetCodeMail;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
@@ -12,6 +14,7 @@ final class RequestPasswordResetUseCase
 {
     public function __construct(
         private UserRepositoryInterface $users,
+        private CodeRepositoryInterface $codes,
     ) {}
 
     public function execute(RequestPasswordResetInput $input): void
@@ -31,6 +34,10 @@ final class RequestPasswordResetUseCase
             now()->addMinutes($ttlMinutes),
         );
 
-        Mail::to($email)->send(new PasswordResetCodeMail($code, $ttlMinutes));
+        if (config('password_reset.send_email')) {
+            Mail::to($email)->send(new PasswordResetCodeMail($code, $ttlMinutes));
+        } 
+
+        $this->codes->replacePlainCode($email, CodeType::PasswordReset, $code);
     }
 }
