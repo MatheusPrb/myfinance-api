@@ -67,5 +67,12 @@ class AppServiceProvider extends ServiceProvider
             $perMinute = 30;
             return Limit::perMinute($perMinute)->by($request->user()->id . ':' . $request->ip());
         });
+
+        RateLimiter::for('admin-logs', function (Request $request) {
+            $perMinute = app()->environment('testing', 'local') ? 1000 : 60;
+            $userId = (string) ($request->user()?->id ?? $request->ip());
+
+            return Limit::perMinute($perMinute)->by($userId.':'.$request->ip());
+        });
     }
 }

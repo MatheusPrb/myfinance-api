@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\V1\Admin\LogController;
 use App\Http\Controllers\V1\AuthenticationController;
 use App\Http\Controllers\V1\CategoryController;
 use App\Http\Controllers\V1\ExpenseController;
@@ -33,6 +34,8 @@ Route::middleware(['auth:sanctum', 'throttle:private-api'])->group(function (): 
         Route::post('expenses', [ExpenseController::class, 'store']);
 
         Route::middleware('admin')->group(function (): void {
+            Route::get('admin/logs', [LogController::class, 'index'])
+                ->middleware('throttle:admin-logs');
             Route::post('categories', [CategoryController::class, 'store']);
             Route::post('categories/{category}/subcategories', [CategoryController::class, 'storeSubcategory']);
         });
