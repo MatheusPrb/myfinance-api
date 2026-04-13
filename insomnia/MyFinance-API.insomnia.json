@@ -1,7 +1,7 @@
 {
   "_type": "export",
   "__export_format": 4,
-  "__export_date": "2026-04-08T00:00:00.000Z",
+  "__export_date": "2026-04-13T00:00:00.000Z",
   "__export_source": "cursor-agent",
   "resources": [
     {
@@ -163,6 +163,80 @@
       "settingRebuildPath": true,
       "settingFollowRedirects": "global",
       "metaSortKey": -1699999999999
+    },
+    {
+      "_id": "req_password_forgot_myfinance",
+      "parentId": "fld_v1_myfinance",
+      "_type": "request",
+      "name": "Password forgot (request code)",
+      "description": "POST /api/v1/password/forgot — envia código de 6 dígitos por e-mail (throttle `auth-password-email`). Resposta genérica em `data.message` mesmo se o e-mail não existir. Corpo: `{ \"email\" }`.",
+      "url": "{{ _.base_url }}/api/v1/password/forgot",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"email\": \"maria@example.com\"\n}"
+      },
+      "headers": [
+        {
+          "id": "pair_accept_json_pw_forgot",
+          "name": "Accept",
+          "value": "application/json",
+          "description": ""
+        },
+        {
+          "id": "pair_content_type_pw_forgot",
+          "name": "Content-Type",
+          "value": "application/json",
+          "description": ""
+        }
+      ],
+      "authentication": {},
+      "parameters": [],
+      "pathParameters": [],
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "metaSortKey": -1699999999998.99
+    },
+    {
+      "_id": "req_password_reset_myfinance",
+      "parentId": "fld_v1_myfinance",
+      "_type": "request",
+      "name": "Password reset (code + new password)",
+      "description": "POST /api/v1/password/reset — redefine a senha com o código recebido por e-mail. Corpo: `email`, `code` (6 dígitos), `password` (mín. 8, com letra e número). Throttle `auth-password-email`.",
+      "url": "{{ _.base_url }}/api/v1/password/reset",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"email\": \"maria@example.com\",\n  \"code\": \"123456\",\n  \"password\": \"novaSenha1\"\n}"
+      },
+      "headers": [
+        {
+          "id": "pair_accept_json_pw_reset",
+          "name": "Accept",
+          "value": "application/json",
+          "description": ""
+        },
+        {
+          "id": "pair_content_type_pw_reset",
+          "name": "Content-Type",
+          "value": "application/json",
+          "description": ""
+        }
+      ],
+      "authentication": {},
+      "parameters": [],
+      "pathParameters": [],
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "metaSortKey": -1699999999998.97
     },
     {
       "_id": "req_logout_myfinance",
