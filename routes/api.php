@@ -11,6 +11,10 @@ Route::prefix('v1')->group(function (): void {
         ->middleware('throttle:auth-register');
     Route::post('login', [AuthenticationController::class, 'login'])
         ->middleware('throttle:auth-login');
+    Route::post('password/forgot', [AuthenticationController::class, 'requestPasswordReset'])
+        ->middleware('throttle:auth-password-email');
+    Route::post('password/reset', [AuthenticationController::class, 'resetPasswordWithCode'])
+        ->middleware('throttle:auth-password-email');
 });
 
 Route::middleware(['auth:sanctum', 'throttle:private-api'])->group(function (): void {

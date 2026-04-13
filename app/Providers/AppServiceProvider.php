@@ -56,6 +56,13 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute($perMinute)->by($request->ip());
         });
 
+        RateLimiter::for('auth-password-email', function (Request $request) {
+            $perMinute = app()->environment('testing', 'local') ? 1000 : 3;
+            $email = (string) $request->input('email', '');
+
+            return Limit::perMinute($perMinute)->by($request->ip().':'.$email);
+        });
+
         RateLimiter::for('private-api', function (Request $request) {
             $perMinute = 30;
             return Limit::perMinute($perMinute)->by($request->user()->id . ':' . $request->ip());

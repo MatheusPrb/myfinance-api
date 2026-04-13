@@ -40,6 +40,32 @@ final class UserRepository implements UserRepositoryInterface
         return $this->toEntity($model);
     }
 
+    public function findByEmail(string $email): ?User
+    {
+        $model = UserModel::query()->where('email', $email)->first();
+
+        return $model ? $this->toEntity($model) : null;
+    }
+
+    public function updatePassword(string $userId, string $hashedPassword): void
+    {
+        $model = UserModel::query()->whereKey($userId)->first();
+
+        if ($model === null) {
+            return;
+        }
+
+        $model->password = $hashedPassword;
+        $model->save();
+    }
+
+    public function revokeAllPersonalAccessTokens(string $userId): void
+    {
+        $model = UserModel::query()->whereKey($userId)->first();
+
+        $model?->tokens()->delete();
+    }
+
     private function toEntity(UserModel $model): User
     {
         return new User(
