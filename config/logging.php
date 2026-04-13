@@ -1,5 +1,6 @@
 <?php
 
+use App\Logging\DatabaseLogHandler;
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
@@ -54,7 +55,13 @@ return [
 
         'stack' => [
             'driver' => 'stack',
-            'channels' => explode(',', (string) env('LOG_STACK', 'single')),
+            'channels' => array_values(array_filter(
+                array_map(
+                    trim(...),
+                    explode(',', (string) config('app.log_stack', 'single,database')),
+                ),
+                fn (string $channel) => $channel !== '',
+            )),
             'ignore_exceptions' => false,
         ],
 
@@ -71,6 +78,17 @@ return [
             'level' => env('LOG_LEVEL', 'debug'),
             'days' => env('LOG_DAILY_DAYS', 14),
             'replace_placeholders' => true,
+        ],
+
+        'database' => [
+            'driver' => 'monolog',
+            'handler' => DatabaseLogHandler::class,
+            'handler_with' => [
+                'connection' => config('app.log_database.connection'),
+                'table' => config('app.log_database.table'),
+            ],
+            'level' => env('LOG_LEVEL', 'debug'),
+            'processors' => [PsrLogMessageProcessor::class],
         ],
 
         'slack' => [
