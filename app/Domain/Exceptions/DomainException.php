@@ -13,6 +13,11 @@ abstract class DomainException extends Exception
         parent::__construct($message);
     }
 
+    public function report(): bool
+    {
+        return false;
+    }
+
     public function getStatusCode(): int
     {
         return $this->statusCode;

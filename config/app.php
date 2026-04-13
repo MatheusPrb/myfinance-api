@@ -131,4 +131,20 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Logging (consumido por config/logging.php)
+    |--------------------------------------------------------------------------
+    |
+    | Pilha padrão de canais e destino da tabela de logs no banco.
+    |
+    */
+
+    'log_stack' => env('LOG_STACK', 'single,database'),
+
+    'log_database' => [
+        'connection' => env('LOG_DATABASE_CONNECTION') ?: null,
+        'table' => env('LOG_DATABASE_TABLE', 'logs'),
+    ],
+
 ];
