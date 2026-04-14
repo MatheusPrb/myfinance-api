@@ -12,7 +12,11 @@ final class SummarizeSpendingUseCase
 
     public function execute(SummarizeSpendingInput $input): SummarizeSpendingOutput
     {
-        $summary = $this->expenses->spendingSummaryByUserId($input->userId);
+        $summary = $this->expenses->spendingSummaryByUserId(
+            $input->userId,
+            $input->dateFrom,
+            $input->dateTo,
+        );
 
         return new SummarizeSpendingOutput(
             $summary['total'],

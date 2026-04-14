@@ -12,7 +12,7 @@ final class ListExpensesUseCase
 
     public function execute(ListExpensesInput $input): ListExpensesOutput
     {
-        $page = $this->expenses->paginateByUserId($input->userId, $input->page, $input->perPage);
+        $page = $this->expenses->paginateByUserId($input);
 
         return new ListExpensesOutput(
             $page['items'],

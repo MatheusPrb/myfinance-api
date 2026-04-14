@@ -2,10 +2,12 @@
 
 namespace App\Infrastructure\Repositories;
 
+use App\Application\UseCases\ListExpenses\ListExpensesInput;
 use App\Domain\Contracts\ExpenseRepositoryInterface;
 use App\Domain\Entities\Expense;
 use App\Helper\Money;
 use App\Models\Expense as ExpenseModel;
+use Carbon\Carbon;
 
 final class ExpenseRepository implements ExpenseRepositoryInterface
 {
@@ -25,13 +27,23 @@ final class ExpenseRepository implements ExpenseRepositoryInterface
         return $this->toEntity($model);
     }
 
-    public function paginateByUserId(string $userId, int $page, int $perPage): array
+    public function paginateByUserId(ListExpensesInput $input): array
     {
+        $hasRange = $input->dateFrom !== null && $input->dateTo !== null;
+
         $paginator = ExpenseModel::query()
-            ->where('user_id', $userId)
+            ->where('user_id', $input->userId)
+            ->when($hasRange, function ($query) use ($input): void {
+                $query->whereBetween('created_at', [
+                    Carbon::parse($input->dateFrom)->startOfDay(),
+                    Carbon::parse($input->dateTo)->endOfDay(),
+                ]);
+            })
+            ->when($input->categoryId !== null, fn ($query) => $query->where('category_id', $input->categoryId))
             ->with(['category', 'subcategory'])
             ->orderByDesc('created_at')
-            ->paginate(perPage: $perPage, page: $page)
+            ->paginate(perPage: $input->perPage, page: $input->page)
+            ->withQueryString()
         ;
 
         $items = [];
@@ -62,10 +74,18 @@ final class ExpenseRepository implements ExpenseRepositoryInterface
         return $model !== null ? $this->toEntity($model) : null;
     }
 
-    public function spendingSummaryByUserId(string $userId): array
+    public function spendingSummaryByUserId(string $userId, ?string $dateFrom = null, ?string $dateTo = null): array
     {
+        $hasRange = $dateFrom !== null && $dateTo !== null;
+
         $rows = ExpenseModel::query()
             ->where('expenses.user_id', $userId)
+            ->when($hasRange, function ($query) use ($dateFrom, $dateTo): void {
+                $query->whereBetween('expenses.created_at', [
+                    Carbon::parse($dateFrom)->startOfDay(),
+                    Carbon::parse($dateTo)->endOfDay(),
+                ]);
+            })
             ->join('categories', 'categories.id', '=', 'expenses.category_id')
             ->selectRaw('expenses.category_id as category_id')
             ->addSelect('categories.name as category_name')
@@ -86,6 +106,12 @@ final class ExpenseRepository implements ExpenseRepositoryInterface
 
         $total = ExpenseModel::query()
             ->where('user_id', $userId)
+            ->when($hasRange, function ($query) use ($dateFrom, $dateTo): void {
+                $query->whereBetween('created_at', [
+                    Carbon::parse($dateFrom)->startOfDay(),
+                    Carbon::parse($dateTo)->endOfDay(),
+                ]);
+            })
             ->sum('value')
         ;
 

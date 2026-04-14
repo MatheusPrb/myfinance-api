@@ -3,9 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-final class ListExpensesRequest extends FormRequest
+final class SummarizeSpendingRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -18,24 +17,13 @@ final class ListExpensesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'page' => ['sometimes', 'integer', 'min:1'],
-            'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
             'date_from' => ['sometimes', 'required_with:date_to', 'date', 'date_format:Y-m-d'],
             'date_to' => ['sometimes', 'required_with:date_from', 'date', 'date_format:Y-m-d'],
-            'category_id' => ['sometimes', 'uuid', Rule::exists('categories', 'id')],
         ];
     }
 
     protected function prepareForValidation(): void
     {
-        if (! $this->filled('category_id')) {
-            if ($this->filled('categoriaId')) {
-                $this->merge(['category_id' => $this->input('categoriaId')]);
-            } elseif ($this->filled('categoria_id')) {
-                $this->merge(['category_id' => $this->input('categoria_id')]);
-            }
-        }
-
         $from = $this->input('date_from');
         $to = $this->input('date_to');
 
