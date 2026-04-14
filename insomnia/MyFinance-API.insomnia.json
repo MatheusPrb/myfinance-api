@@ -132,7 +132,7 @@
       "parentId": "fld_v1_myfinance",
       "_type": "request",
       "name": "Login",
-      "description": "POST /api/v1/login — retorna token Sanctum em `data` (string). Cole o valor na variável de ambiente `bearer_token` (Base Environment) para usar as rotas autenticadas.",
+      "description": "POST /api/v1/login — retorna token Sanctum em `data` (string). Cole em `bearer_token` (Base Environment); os requests autenticados usam header `Authorization: Bearer {{ _.bearer_token }}`.",
       "url": "{{ _.base_url }}/api/v1/login",
       "method": "POST",
       "body": {
@@ -243,7 +243,7 @@
       "parentId": "fld_v1_myfinance",
       "_type": "request",
       "name": "Logout",
-      "description": "POST /api/v1/logout — revoga o token Sanctum atual. Requer `bearer_token`. Após isso, use Login de novo.",
+      "description": "POST /api/v1/logout — revoga o token Sanctum atual. Envie o token no header `Authorization: Bearer …` (variável `bearer_token`). Após isso, use Login de novo.",
       "url": "{{ _.base_url }}/api/v1/logout",
       "method": "POST",
       "body": {},
@@ -253,13 +253,15 @@
           "name": "Accept",
           "value": "application/json",
           "description": ""
+        },
+        {
+          "id": "pair_auth_logout",
+          "name": "Authorization",
+          "value": "Bearer {{ _.bearer_token }}",
+          "description": ""
         }
       ],
-      "authentication": {
-        "type": "bearer",
-        "token": "{{ _.bearer_token }}",
-        "disabled": false
-      },
+      "authentication": {},
       "parameters": [],
       "pathParameters": [],
       "settingStoreCookies": true,
@@ -275,7 +277,7 @@
       "_type": "request_group",
       "parentId": "fld_v1_myfinance",
       "name": "Categories",
-      "description": "Categorias e subcategorias (Sanctum). Use `category_id` no ambiente para rotas por categoria. **Create category** e **Create subcategory** exigem usuário com `is_admin = true`.",
+      "description": "Categorias e subcategorias (Sanctum). Token no header `Authorization: Bearer …` (`bearer_token`). Use `category_id` no ambiente para rotas por categoria. **Create category** e **Create subcategory** exigem usuário com `is_admin = true`.",
       "environment": {},
       "environmentPropertyOrder": null,
       "metaSortKey": -1699999999998.5
@@ -295,13 +297,15 @@
           "name": "Accept",
           "value": "application/json",
           "description": ""
+        },
+        {
+          "id": "pair_auth_cat_list",
+          "name": "Authorization",
+          "value": "Bearer {{ _.bearer_token }}",
+          "description": ""
         }
       ],
-      "authentication": {
-        "type": "bearer",
-        "token": "{{ _.bearer_token }}",
-        "disabled": false
-      },
+      "authentication": {},
       "parameters": [],
       "pathParameters": [],
       "settingStoreCookies": true,
@@ -317,7 +321,7 @@
       "parentId": "fld_categories_myfinance",
       "_type": "request",
       "name": "Create category (admin)",
-      "description": "POST /api/v1/categories — cadastra categoria. Requer Bearer e usuário admin (`is_admin`). Corpo: `{ \"name\": \"...\" }`. Resposta 201 em `data`: `id`, `name`.",
+      "description": "POST /api/v1/categories — cadastra categoria. Requer header `Authorization: Bearer …` e usuário admin (`is_admin`). Corpo: `{ \"name\": \"...\" }`. Resposta 201 em `data`: `id`, `name`.",
       "url": "{{ _.base_url }}/api/v1/categories",
       "method": "POST",
       "body": {
@@ -336,13 +340,15 @@
           "name": "Content-Type",
           "value": "application/json",
           "description": ""
+        },
+        {
+          "id": "pair_auth_cat_create",
+          "name": "Authorization",
+          "value": "Bearer {{ _.bearer_token }}",
+          "description": ""
         }
       ],
-      "authentication": {
-        "type": "bearer",
-        "token": "{{ _.bearer_token }}",
-        "disabled": false
-      },
+      "authentication": {},
       "parameters": [],
       "pathParameters": [],
       "settingStoreCookies": true,
@@ -368,13 +374,15 @@
           "name": "Accept",
           "value": "application/json",
           "description": ""
+        },
+        {
+          "id": "pair_auth_sub_list",
+          "name": "Authorization",
+          "value": "Bearer {{ _.bearer_token }}",
+          "description": ""
         }
       ],
-      "authentication": {
-        "type": "bearer",
-        "token": "{{ _.bearer_token }}",
-        "disabled": false
-      },
+      "authentication": {},
       "parameters": [],
       "pathParameters": [],
       "settingStoreCookies": true,
@@ -390,7 +398,7 @@
       "parentId": "fld_categories_myfinance",
       "_type": "request",
       "name": "Create subcategory (admin)",
-      "description": "POST /api/v1/categories/{category}/subcategories — cadastra subcategoria na categoria (UUID em `category_id`). Requer admin. Corpo: `{ \"name\": \"...\" }`. Resposta 201: `id`, `name`, `category_id`.",
+      "description": "POST /api/v1/categories/{category}/subcategories — cadastra subcategoria na categoria (UUID em `category_id`). Requer header `Authorization: Bearer …` e admin. Corpo: `{ \"name\": \"...\" }`. Resposta 201: `id`, `name`, `category_id`.",
       "url": "{{ _.base_url }}/api/v1/categories/{{ _.category_id }}/subcategories",
       "method": "POST",
       "body": {
@@ -409,13 +417,15 @@
           "name": "Content-Type",
           "value": "application/json",
           "description": ""
+        },
+        {
+          "id": "pair_auth_sub_create",
+          "name": "Authorization",
+          "value": "Bearer {{ _.bearer_token }}",
+          "description": ""
         }
       ],
-      "authentication": {
-        "type": "bearer",
-        "token": "{{ _.bearer_token }}",
-        "disabled": false
-      },
+      "authentication": {},
       "parameters": [],
       "pathParameters": [],
       "settingStoreCookies": true,
@@ -431,7 +441,7 @@
       "_type": "request_group",
       "parentId": "fld_v1_myfinance",
       "name": "Expenses",
-      "description": "Gastos (Sanctum). Após o Login, defina `bearer_token`. Para \"Get expense by id\", use o `id` retornado na listagem ou no create em `expense_id`.",
+      "description": "Gastos (Sanctum). Token no header `Authorization: Bearer …` (variável `bearer_token`). Para \"Get expense by id\", use o `id` retornado na listagem ou no create em `expense_id`. Resumos e listagem aceitam filtro opcional `date_from` + `date_to` (Y-m-d). A listagem aceita também `category_id` e `subcategory_id`.",
       "environment": {},
       "environmentPropertyOrder": null,
       "metaSortKey": -1699999999998
@@ -441,7 +451,7 @@
       "parentId": "fld_expenses_myfinance",
       "_type": "request",
       "name": "Spending summary",
-      "description": "GET /api/v1/expenses/summary — total geral e soma por categoria do usuário autenticado.",
+      "description": "GET /api/v1/expenses/summary — total geral e soma por categoria do usuário autenticado. Query opcional: `date_from` e `date_to` (Y-m-d, use os dois; filtra por `created_at`).",
       "url": "{{ _.base_url }}/api/v1/expenses/summary",
       "method": "GET",
       "body": {},
@@ -451,14 +461,31 @@
           "name": "Accept",
           "value": "application/json",
           "description": ""
+        },
+        {
+          "id": "pair_auth_exp_summary",
+          "name": "Authorization",
+          "value": "Bearer {{ _.bearer_token }}",
+          "description": ""
         }
       ],
-      "authentication": {
-        "type": "bearer",
-        "token": "{{ _.bearer_token }}",
-        "disabled": false
-      },
-      "parameters": [],
+      "authentication": {},
+      "parameters": [
+        {
+          "id": "pair_exp_sum_date_from",
+          "name": "date_from",
+          "value": "2026-01-01",
+          "description": "Opcional. Envie junto com date_to (Y-m-d).",
+          "disabled": true
+        },
+        {
+          "id": "pair_exp_sum_date_to",
+          "name": "date_to",
+          "value": "2026-04-14",
+          "description": "Opcional. Deve ser >= date_from.",
+          "disabled": true
+        }
+      ],
       "pathParameters": [],
       "settingStoreCookies": true,
       "settingSendCookies": true,
@@ -469,11 +496,60 @@
       "metaSortKey": -1699999999997
     },
     {
+      "_id": "req_expenses_summary_by_subcategory_myfinance",
+      "parentId": "fld_expenses_myfinance",
+      "_type": "request",
+      "name": "Spending summary by subcategory",
+      "description": "GET /api/v1/expenses/summary/by-subcategory — total e detalhamento por categoria + subcategoria (somente gastos com `subcategory_id`). Query opcional: `date_from` e `date_to` (Y-m-d, ambos; filtra por `created_at`).",
+      "url": "{{ _.base_url }}/api/v1/expenses/summary/by-subcategory",
+      "method": "GET",
+      "body": {},
+      "headers": [
+        {
+          "id": "pair_accept_json_exp_summary_sub",
+          "name": "Accept",
+          "value": "application/json",
+          "description": ""
+        },
+        {
+          "id": "pair_auth_exp_summary_sub",
+          "name": "Authorization",
+          "value": "Bearer {{ _.bearer_token }}",
+          "description": ""
+        }
+      ],
+      "authentication": {},
+      "parameters": [
+        {
+          "id": "pair_exp_sum_sub_date_from",
+          "name": "date_from",
+          "value": "2026-01-01",
+          "description": "Opcional. Envie junto com date_to (Y-m-d).",
+          "disabled": true
+        },
+        {
+          "id": "pair_exp_sum_sub_date_to",
+          "name": "date_to",
+          "value": "2026-04-14",
+          "description": "Opcional. Deve ser >= date_from.",
+          "disabled": true
+        }
+      ],
+      "pathParameters": [],
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "metaSortKey": -1699999999996.75
+    },
+    {
       "_id": "req_expenses_list_myfinance",
       "parentId": "fld_expenses_myfinance",
       "_type": "request",
       "name": "List expenses (paginated)",
-      "description": "GET /api/v1/expenses — lista paginada dos gastos do usuário autenticado. Query: `page` (padrão 1), `per_page` (padrão 15, máx. 100).",
+      "description": "GET /api/v1/expenses — lista paginada dos gastos do usuário autenticado. Query: `page` (padrão 1), `per_page` (padrão 15, máx. 100). Opcional: `date_from` + `date_to` (Y-m-d, ambos), `category_id`, `subcategory_id` (UUID).",
       "url": "{{ _.base_url }}/api/v1/expenses",
       "method": "GET",
       "body": {},
@@ -483,13 +559,15 @@
           "name": "Accept",
           "value": "application/json",
           "description": ""
+        },
+        {
+          "id": "pair_auth_exp_list",
+          "name": "Authorization",
+          "value": "Bearer {{ _.bearer_token }}",
+          "description": ""
         }
       ],
-      "authentication": {
-        "type": "bearer",
-        "token": "{{ _.bearer_token }}",
-        "disabled": false
-      },
+      "authentication": {},
       "parameters": [
         {
           "id": "pair_exp_page",
@@ -504,6 +582,34 @@
           "value": "15",
           "description": "",
           "disabled": false
+        },
+        {
+          "id": "pair_exp_list_date_from",
+          "name": "date_from",
+          "value": "2026-01-01",
+          "description": "Opcional. Envie junto com date_to (Y-m-d).",
+          "disabled": true
+        },
+        {
+          "id": "pair_exp_list_date_to",
+          "name": "date_to",
+          "value": "2026-04-14",
+          "description": "Opcional. Deve ser >= date_from.",
+          "disabled": true
+        },
+        {
+          "id": "pair_exp_list_category_id",
+          "name": "category_id",
+          "value": "{{ _.category_id }}",
+          "description": "Opcional. Filtro por categoria (UUID).",
+          "disabled": true
+        },
+        {
+          "id": "pair_exp_list_subcategory_id",
+          "name": "subcategory_id",
+          "value": "",
+          "description": "Opcional. Filtro por subcategoria (UUID). Se enviado, costuma ser o foco do filtro.",
+          "disabled": true
         }
       ],
       "pathParameters": [],
@@ -530,13 +636,15 @@
           "name": "Accept",
           "value": "application/json",
           "description": ""
+        },
+        {
+          "id": "pair_auth_exp_show",
+          "name": "Authorization",
+          "value": "Bearer {{ _.bearer_token }}",
+          "description": ""
         }
       ],
-      "authentication": {
-        "type": "bearer",
-        "token": "{{ _.bearer_token }}",
-        "disabled": false
-      },
+      "authentication": {},
       "parameters": [],
       "pathParameters": [],
       "settingStoreCookies": true,
@@ -571,13 +679,15 @@
           "name": "Content-Type",
           "value": "application/json",
           "description": ""
+        },
+        {
+          "id": "pair_auth_exp_create",
+          "name": "Authorization",
+          "value": "Bearer {{ _.bearer_token }}",
+          "description": ""
         }
       ],
-      "authentication": {
-        "type": "bearer",
-        "token": "{{ _.bearer_token }}",
-        "disabled": false
-      },
+      "authentication": {},
       "parameters": [],
       "pathParameters": [],
       "settingStoreCookies": true,

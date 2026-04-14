@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Application\UseCases\SummarizeSpending;
+namespace App\Application\UseCases\SummarizeSpendingBySubcategory;
 
-final readonly class SummarizeSpendingInput
+final readonly class SummarizeSpendingBySubcategoryInput
 {
     public function __construct(
         public readonly string $userId,
