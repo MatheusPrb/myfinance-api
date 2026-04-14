@@ -3,11 +3,14 @@
 namespace App\Infrastructure\Repositories;
 
 use App\Application\UseCases\ListExpenses\ListExpensesInput;
+use App\Application\UseCases\SummarizeSpending\SummarizeSpendingInput;
+use App\Application\UseCases\SummarizeSpendingBySubcategory\SummarizeSpendingBySubcategoryInput;
 use App\Domain\Contracts\ExpenseRepositoryInterface;
 use App\Domain\Entities\Expense;
 use App\Helper\Money;
 use App\Models\Expense as ExpenseModel;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 
 final class ExpenseRepository implements ExpenseRepositoryInterface
 {
@@ -29,17 +32,12 @@ final class ExpenseRepository implements ExpenseRepositoryInterface
 
     public function paginateByUserId(ListExpensesInput $input): array
     {
-        $hasRange = $input->dateFrom !== null && $input->dateTo !== null;
+        $query = ExpenseModel::query()->where('user_id', $input->userId);
 
-        $paginator = ExpenseModel::query()
-            ->where('user_id', $input->userId)
-            ->when($hasRange, function ($query) use ($input): void {
-                $query->whereBetween('created_at', [
-                    Carbon::parse($input->dateFrom)->startOfDay(),
-                    Carbon::parse($input->dateTo)->endOfDay(),
-                ]);
-            })
-            ->when($input->categoryId !== null, fn ($query) => $query->where('category_id', $input->categoryId))
+        $this->applyCreatedAtBetween($query, $input->dateFrom, $input->dateTo);
+        $this->applyListFilters($query, $input);
+
+        $paginator = $query
             ->with(['category', 'subcategory'])
             ->orderByDesc('created_at')
             ->paginate(perPage: $input->perPage, page: $input->page)
@@ -74,22 +72,22 @@ final class ExpenseRepository implements ExpenseRepositoryInterface
         return $model !== null ? $this->toEntity($model) : null;
     }
 
-    public function spendingSummaryByUserId(string $userId, ?string $dateFrom = null, ?string $dateTo = null): array
+    public function spendingSummaryByUserId(SummarizeSpendingInput $input): array
     {
-        $hasRange = $dateFrom !== null && $dateTo !== null;
+        $userId = $input->userId;
+        $dateFrom = $input->dateFrom;
+        $dateTo = $input->dateTo;
 
-        $rows = ExpenseModel::query()
-            ->where('expenses.user_id', $userId)
-            ->when($hasRange, function ($query) use ($dateFrom, $dateTo): void {
-                $query->whereBetween('expenses.created_at', [
-                    Carbon::parse($dateFrom)->startOfDay(),
-                    Carbon::parse($dateTo)->endOfDay(),
-                ]);
-            })
+        $query = ExpenseModel::query()->where('expenses.user_id', $userId);
+        $this->applyCreatedAtBetween($query, $dateFrom, $dateTo, 'expenses.created_at');
+
+        $rows = $query
+            ->selectRaw(
+                'expenses.category_id as category_id,
+                categories.name as category_name,
+                SUM(expenses.value) as total',
+            )
             ->join('categories', 'categories.id', '=', 'expenses.category_id')
-            ->selectRaw('expenses.category_id as category_id')
-            ->addSelect('categories.name as category_name')
-            ->selectRaw('SUM(expenses.value) as total')
             ->groupBy('expenses.category_id', 'categories.id', 'categories.name')
             ->orderByRaw('SUM(expenses.value) DESC')
             ->get()
@@ -104,21 +102,110 @@ final class ExpenseRepository implements ExpenseRepositoryInterface
             ];
         }
 
-        $total = ExpenseModel::query()
-            ->where('user_id', $userId)
-            ->when($hasRange, function ($query) use ($dateFrom, $dateTo): void {
-                $query->whereBetween('created_at', [
-                    Carbon::parse($dateFrom)->startOfDay(),
-                    Carbon::parse($dateTo)->endOfDay(),
-                ]);
-            })
-            ->sum('value')
-        ;
+        $total = $this->sumExpenseValueByUserIdAndDateRange($userId, $dateFrom, $dateTo);
 
         return [
-            'total' => Money::format($total ?? 0),
+            'total' => Money::format($total),
             'by_category' => $byCategory,
         ];
+    }
+
+    public function spendingSummaryBySubcategoryByUserId(SummarizeSpendingBySubcategoryInput $input): array
+    {
+        $userId = $input->userId;
+        $dateFrom = $input->dateFrom;
+        $dateTo = $input->dateTo;
+
+        $query = ExpenseModel::query()
+            ->where('expenses.user_id', $userId)
+            ->whereNotNull('expenses.subcategory_id')
+        ;
+
+        $this->applyCreatedAtBetween($query, $dateFrom, $dateTo, 'expenses.created_at');
+
+        $rows = $query
+            ->selectRaw(
+                'expenses.category_id as category_id, '
+                .'categories.name as category_name, '
+                .'expenses.subcategory_id as subcategory_id, '
+                .'subcategories.name as subcategory_name, '
+                .'SUM(expenses.value) as total',
+            )
+            ->join('categories', 'categories.id', '=', 'expenses.category_id')
+            ->join('subcategories', 'subcategories.id', '=', 'expenses.subcategory_id')
+            ->groupBy(
+                'expenses.category_id',
+                'categories.id',
+                'categories.name',
+                'expenses.subcategory_id',
+                'subcategories.id',
+                'subcategories.name',
+            )
+            ->orderByRaw('SUM(expenses.value) DESC')
+            ->get()
+        ;
+
+        $bySubcategory = [];
+        foreach ($rows as $row) {
+            $bySubcategory[] = [
+                'category_id' => $row->category_id,
+                'category_name' => $row->category_name,
+                'subcategory_id' => $row->subcategory_id,
+                'subcategory_name' => $row->subcategory_name,
+                'total' => Money::format($row->total),
+            ];
+        }
+
+        $total = $this->sumExpenseValueByUserIdAndDateRange($userId, $dateFrom, $dateTo, true);
+
+        return [
+            'total' => Money::format($total),
+            'by_subcategory' => $bySubcategory,
+        ];
+    }
+
+    private function sumExpenseValueByUserIdAndDateRange(
+        string $userId,
+        ?string $dateFrom,
+        ?string $dateTo,
+        bool $onlyWithSubcategory = false,
+    ): float {
+        $query = ExpenseModel::query()->where('user_id', $userId);
+
+        if ($onlyWithSubcategory) {
+            $query->whereNotNull('subcategory_id');
+        }
+
+        $this->applyCreatedAtBetween($query, $dateFrom, $dateTo);
+
+        $total = $query->sum('value');
+
+        return $total ?? 0;
+    }
+
+    private function applyCreatedAtBetween(Builder $query, ?string $dateFrom, ?string $dateTo, string $column = 'created_at'): void
+    {
+        if ($dateFrom === null || $dateTo === null) {
+            return;
+        }
+
+        $query->whereBetween($column, [
+            Carbon::parse($dateFrom)->startOfDay(),
+            Carbon::parse($dateTo)->endOfDay(),
+        ]);
+    }
+
+    private function applyListFilters(Builder $query, ListExpensesInput $input): void
+    {
+        if ($input->subcategoryId !== null) {
+            $query->where('subcategory_id', $input->subcategoryId);
+
+            return;
+        }
+
+        if ($input->categoryId !== null) {
+            $query->where('category_id', $input->categoryId);
+        }
     }
 
     private function toEntity(ExpenseModel $model): Expense

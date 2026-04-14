@@ -10,10 +10,13 @@ use App\Application\UseCases\ListExpenses\ListExpensesInput;
 use App\Application\UseCases\ListExpenses\ListExpensesUseCase;
 use App\Application\UseCases\SummarizeSpending\SummarizeSpendingInput;
 use App\Application\UseCases\SummarizeSpending\SummarizeSpendingUseCase;
+use App\Application\UseCases\SummarizeSpendingBySubcategory\SummarizeSpendingBySubcategoryInput;
+use App\Application\UseCases\SummarizeSpendingBySubcategory\SummarizeSpendingBySubcategoryUseCase;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateExpenseRequest;
 use App\Http\Requests\ListExpensesRequest;
 use App\Http\Requests\ShowExpenseRequest;
+use App\Http\Requests\SummarizeSpendingBySubcategoryRequest;
 use App\Http\Requests\SummarizeSpendingRequest;
 use App\Http\Responses\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -22,15 +25,10 @@ class ExpenseController extends Controller
 {
     public function index(ListExpensesRequest $request, ListExpensesUseCase $listExpensesUseCase): JsonResponse
     {
+        $data = $request->validated();  
+        $data['user_id'] = $request->user()->id;
 
-        $input = new ListExpensesInput(
-            $request->user()->id,
-            $request->validated('page', 1),
-            $request->validated('per_page', 15),
-            $request->validated('date_from', null),
-            $request->validated('date_to', null),
-            $request->validated('category_id', null),
-        );
+        $input = ListExpensesInput::fromArray($data);
 
         $output = $listExpensesUseCase->execute($input);
 
@@ -39,13 +37,26 @@ class ExpenseController extends Controller
 
     public function summary(SummarizeSpendingRequest $request, SummarizeSpendingUseCase $summarizeSpendingUseCase): JsonResponse
     {
-        $input = new SummarizeSpendingInput(
-            $request->user()->id,
-            $request->validated('date_from') ?? null,
-            $request->validated('date_to') ?? null,
-        );
+        $data = $request->validated();
+        $data['user_id'] = $request->user()->id;
+
+        $input = SummarizeSpendingInput::fromArray($data);
 
         $output = $summarizeSpendingUseCase->execute($input);
+
+        return ApiResponse::success($output->toArray());
+    }
+
+    public function summaryBySubcategory(
+        SummarizeSpendingBySubcategoryRequest $request,
+        SummarizeSpendingBySubcategoryUseCase $summarizeSpendingBySubcategoryUseCase,
+    ): JsonResponse {
+        $data = $request->validated();
+        $data['user_id'] = $request->user()->id;
+
+        $input = SummarizeSpendingBySubcategoryInput::fromArray($data);
+
+        $output = $summarizeSpendingBySubcategoryUseCase->execute($input);
 
         return ApiResponse::success($output->toArray());
     }

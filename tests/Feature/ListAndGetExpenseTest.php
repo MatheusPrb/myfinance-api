@@ -131,28 +131,45 @@ class ListAndGetExpenseTest extends TestCase
             ->assertJsonPath('data.items.0.description', 'Only A');
     }
 
-    public function test_list_accepts_categoria_id_query_alias(): void
+    public function test_list_filters_by_subcategory_id(): void
     {
         $user = User::factory()->create();
         Sanctum::actingAs($user);
 
-        $cat = Category::query()->create(['name' => 'Uber']);
+        $cat = Category::query()->create(['name' => 'Cat']);
+        $sub1 = Subcategory::query()->create(['category_id' => $cat->id, 'name' => 'S1']);
+        $sub2 = Subcategory::query()->create(['category_id' => $cat->id, 'name' => 'S2']);
 
         ExpenseModel::query()->create([
             'user_id' => $user->id,
             'category_id' => $cat->id,
-            'subcategory_id' => null,
-            'description' => 'Ride',
-            'value' => 5,
+            'subcategory_id' => $sub1->id,
+            'description' => 'In S1',
+            'value' => 1,
+        ]);
+        ExpenseModel::query()->create([
+            'user_id' => $user->id,
+            'category_id' => $cat->id,
+            'subcategory_id' => $sub2->id,
+            'description' => 'In S2',
+            'value' => 2,
         ]);
 
-        $response = $this->getJson('/api/v1/expenses?'.http_build_query([
-            'categoriaId' => $cat->id,
-        ]));
+        $response = $this->getJson("/api/v1/expenses?subcategory_id={$sub1->id}");
 
         $response->assertOk()
             ->assertJsonPath('data.meta.total', 1)
-            ->assertJsonPath('data.items.0.description', 'Ride');
+            ->assertJsonPath('data.items.0.description', 'In S1');
+    }
+
+    public function test_list_rejects_inverted_date_range(): void
+    {
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+
+        $response = $this->getJson('/api/v1/expenses?date_from=2026-04-20&date_to=2026-04-10');
+
+        $response->assertUnprocessable();
     }
 
     public function test_list_rejects_date_from_without_date_to(): void

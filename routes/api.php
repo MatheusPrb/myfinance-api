@@ -29,6 +29,7 @@ Route::middleware(['auth:sanctum', 'throttle:private-api'])->group(function (): 
         Route::get('categories', [CategoryController::class, 'index']);
         Route::get('categories/{category}/subcategories', [CategoryController::class, 'subcategories']);
         Route::get('expenses/summary', [ExpenseController::class, 'summary']);
+        Route::get('expenses/summary/by-subcategory', [ExpenseController::class, 'summaryBySubcategory']);
         Route::get('expenses', [ExpenseController::class, 'index']);
         Route::get('expenses/{id}', [ExpenseController::class, 'show']);
         Route::post('expenses', [ExpenseController::class, 'store']);

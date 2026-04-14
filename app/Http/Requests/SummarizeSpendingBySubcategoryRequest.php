@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-final class SummarizeSpendingRequest extends FormRequest
+final class SummarizeSpendingBySubcategoryRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -18,7 +18,8 @@ final class SummarizeSpendingRequest extends FormRequest
     {
         return [
             'date_from' => ['sometimes', 'required_with:date_to', 'date', 'date_format:Y-m-d'],
-            'date_to' => ['sometimes', 'required_with:date_from', 'date', 'date_format:Y-m-d', 'after_or_equal:date_from'],
+            'date_to' => ['sometimes', 'required_with:date_from', 'date', 'date_format:Y-m-d', 'after_or_equal:date_from',
+            ],
         ];
     }
 }
