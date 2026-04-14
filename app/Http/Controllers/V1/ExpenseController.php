@@ -14,21 +14,22 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateExpenseRequest;
 use App\Http\Requests\ListExpensesRequest;
 use App\Http\Requests\ShowExpenseRequest;
+use App\Http\Requests\SummarizeSpendingRequest;
 use App\Http\Responses\ApiResponse;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class ExpenseController extends Controller
 {
     public function index(ListExpensesRequest $request, ListExpensesUseCase $listExpensesUseCase): JsonResponse
     {
-        $page = (int) $request->validated('page', 1);
-        $perPage = (int) $request->validated('per_page', 15);
 
         $input = new ListExpensesInput(
             $request->user()->id,
-            $page,
-            $perPage,
+            $request->validated('page', 1),
+            $request->validated('per_page', 15),
+            $request->validated('date_from', null),
+            $request->validated('date_to', null),
+            $request->validated('category_id', null),
         );
 
         $output = $listExpensesUseCase->execute($input);
@@ -36,9 +37,14 @@ class ExpenseController extends Controller
         return ApiResponse::success($output->toArray());
     }
 
-    public function summary(Request $request, SummarizeSpendingUseCase $summarizeSpendingUseCase): JsonResponse
+    public function summary(SummarizeSpendingRequest $request, SummarizeSpendingUseCase $summarizeSpendingUseCase): JsonResponse
     {
-        $input = new SummarizeSpendingInput($request->user()->id);
+        $input = new SummarizeSpendingInput(
+            $request->user()->id,
+            $request->validated('date_from') ?? null,
+            $request->validated('date_to') ?? null,
+        );
+
         $output = $summarizeSpendingUseCase->execute($input);
 
         return ApiResponse::success($output->toArray());

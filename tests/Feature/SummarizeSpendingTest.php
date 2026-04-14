@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Expense as ExpenseModel;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
@@ -85,5 +86,81 @@ class SummarizeSpendingTest extends TestCase
 
         $this->assertSame('Mobilidade', $byCategory[1]['category_name']);
         $this->assertSame('15.00', $byCategory[1]['total']);
+    }
+
+    public function test_filters_summary_by_created_at_date_range(): void
+    {
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+
+        $category = Category::query()->create(['name' => 'Teste']);
+
+        $inside = ExpenseModel::query()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'subcategory_id' => null,
+            'description' => 'Dentro',
+            'value' => 100,
+        ]);
+        DB::table('expenses')->where('id', $inside->id)->update([
+            'created_at' => '2026-04-10 12:00:00',
+            'updated_at' => '2026-04-10 12:00:00',
+        ]);
+
+        $outside = ExpenseModel::query()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'subcategory_id' => null,
+            'description' => 'Fora (antes)',
+            'value' => 50,
+        ]);
+        DB::table('expenses')->where('id', $outside->id)->update([
+            'created_at' => '2026-04-01 12:00:00',
+            'updated_at' => '2026-04-01 12:00:00',
+        ]);
+
+        $response = $this->getJson('/api/v1/expenses/summary?date_from=2026-04-05&date_to=2026-04-15');
+
+        $response->assertOk()
+            ->assertJsonPath('data.total', '100.00');
+
+        $byCategory = $response->json('data.by_category');
+        $this->assertCount(1, $byCategory);
+        $this->assertSame('100.00', $byCategory[0]['total']);
+    }
+
+    public function test_normalizes_date_range_when_from_is_after_to(): void
+    {
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+
+        $category = Category::query()->create(['name' => 'Teste']);
+
+        $expense = ExpenseModel::query()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'subcategory_id' => null,
+            'description' => 'No intervalo',
+            'value' => 25,
+        ]);
+        DB::table('expenses')->where('id', $expense->id)->update([
+            'created_at' => '2026-04-08 10:00:00',
+            'updated_at' => '2026-04-08 10:00:00',
+        ]);
+
+        $response = $this->getJson('/api/v1/expenses/summary?date_from=2026-04-12&date_to=2026-04-05');
+
+        $response->assertOk()
+            ->assertJsonPath('data.total', '25.00');
+    }
+
+    public function test_rejects_date_from_without_date_to(): void
+    {
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+
+        $response = $this->getJson('/api/v1/expenses/summary?date_from=2026-04-01');
+
+        $response->assertUnprocessable();
     }
 }
