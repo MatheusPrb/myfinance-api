@@ -10,7 +10,6 @@ class Messages
     public const INTERNAL_SERVER_ERROR = "Erro interno do servidor";
     public const EXPENSE_NOT_FOUND = "Gasto não encontrado";
     public const CATEGORY_NOT_FOUND = "Categoria não encontrada";
-    public const NO_CATEGORIES_FOUND = "Nenhuma categoria encontrada";
     public const SUBCATEGORY_DOES_NOT_BELONG_TO_CATEGORY = "A subcategoria não pertence à categoria informada";
     public const FORBIDDEN_NOT_ADMIN = "Falha ao validar usuário";
     public const NOT_FOUND = "Recurso não encontrado";
