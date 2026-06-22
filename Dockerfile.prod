@@ -1,4 +1,4 @@
-FROM php:8.4-fpm-bookworm AS app_production
+FROM php:8.4-fpm-bookworm
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libonig-dev \
@@ -40,10 +40,11 @@ RUN mkdir -p \
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R ug+rwx storage bootstrap/cache
 
-COPY docker/docker-entrypoint.prod.sh /usr/local/bin/docker-entrypoint.sh
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+COPY docker/docker-entrypoint.prod.sh /usr/local/bin/docker-entrypoint.prod.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.prod.sh
 
-ENTRYPOINT ["docker-entrypoint.sh"]
-EXPOSE 10000
+ENTRYPOINT ["docker-entrypoint.prod.sh"]
 
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=10000"]
+EXPOSE 9000
+
+CMD ["php-fpm"]
