@@ -21,20 +21,6 @@ services:
     networks:
       - myfinance_prod
 
-  frontend:
-    build:
-      context: ../myfinance-app
-      dockerfile: Dockerfile.production
-      args:
-        VITE_API_URL: ""
-    image: myfinance-front:${IMAGE_TAG:-prod}
-    container_name: myfinance_prod_frontend
-    restart: unless-stopped
-    expose:
-      - "80"
-    networks:
-      - myfinance_prod
-
   nginx:
     image: nginx:1.27-alpine
     container_name: myfinance_prod_nginx
@@ -47,7 +33,6 @@ services:
       - ./:/var/www/html:ro
     depends_on:
       - api
-      - frontend
     networks:
       - myfinance_prod
 
