@@ -43,6 +43,7 @@ services:
       - "${HTTP_PORT:-80}:80"
     volumes:
       - ./infra/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ../myfinance-app/dist:/var/www/frontend:ro
       - ./:/var/www/html:ro
     depends_on:
       - api
