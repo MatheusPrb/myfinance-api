@@ -18,9 +18,9 @@ use App\Infrastructure\Repositories\UserRepository;
 use App\Infrastructure\Security\PasswordHasher;
 use App\Models\PersonalAccessToken;
 use Illuminate\Cache\RateLimiting\Limit;
-use Illuminate\Foundation\Events\DiagnosingHealth;
+// use Illuminate\Foundation\Events\DiagnosingHealth;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Event;
+// use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Sanctum\Sanctum;
@@ -47,9 +47,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // TODO(remover): quebra proposital do /up para testar o rollback automatico do deploy.sh
-        Event::listen(DiagnosingHealth::class, function (): void {
-            throw new \RuntimeException('Rollback test: healthcheck quebrado de proposito');
-        });
+        // Event::listen(DiagnosingHealth::class, function (): void {
+        //     throw new \RuntimeException('Rollback test: healthcheck quebrado de proposito');
+        // });
 
         Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
 
