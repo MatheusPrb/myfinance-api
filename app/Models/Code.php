@@ -9,6 +9,9 @@ class Code extends Model
 {
     public $timestamps = false;
     protected $table = 'codes';
+    public $incrementing = false;
+    protected $keyType = 'string';
+
 
     protected $fillable = [
         'id',

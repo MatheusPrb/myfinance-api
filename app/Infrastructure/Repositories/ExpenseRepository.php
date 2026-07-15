@@ -84,11 +84,11 @@ final class ExpenseRepository implements ExpenseRepositoryInterface
         $rows = $query
             ->selectRaw(
                 'expenses.category_id as category_id,
-                categories.name as category_name,
+                c.name as category_name,
                 SUM(expenses.value) as total',
             )
-            ->join('categories', 'categories.id', '=', 'expenses.category_id')
-            ->groupBy('expenses.category_id', 'categories.id', 'categories.name')
+            ->join('categories as c', 'c.id', '=', 'expenses.category_id')
+            ->groupBy('expenses.category_id', 'c.id', 'c.name')
             ->orderByRaw('SUM(expenses.value) DESC')
             ->get()
         ;
@@ -126,20 +126,20 @@ final class ExpenseRepository implements ExpenseRepositoryInterface
         $rows = $query
             ->selectRaw(
                 'expenses.category_id as category_id, '
-                .'categories.name as category_name, '
+                .'c.name as category_name, '
                 .'expenses.subcategory_id as subcategory_id, '
-                .'subcategories.name as subcategory_name, '
+                .'s.name as subcategory_name, '
                 .'SUM(expenses.value) as total',
             )
-            ->join('categories', 'categories.id', '=', 'expenses.category_id')
-            ->join('subcategories', 'subcategories.id', '=', 'expenses.subcategory_id')
+            ->join('categories as c', 'c.id', '=', 'expenses.category_id')
+            ->join('subcategories as s', 's.id', '=', 'expenses.subcategory_id')
             ->groupBy(
                 'expenses.category_id',
-                'categories.id',
-                'categories.name',
+                'c.id',
+                'c.name',
                 'expenses.subcategory_id',
-                'subcategories.id',
-                'subcategories.name',
+                's.id',
+                's.name',
             )
             ->orderByRaw('SUM(expenses.value) DESC')
             ->get()
@@ -178,9 +178,7 @@ final class ExpenseRepository implements ExpenseRepositoryInterface
 
         $this->applyCreatedAtBetween($query, $dateFrom, $dateTo);
 
-        $total = $query->sum('value');
-
-        return $total ?? 0;
+        return $query->sum('value');
     }
 
     private function applyCreatedAtBetween(Builder $query, ?string $dateFrom, ?string $dateTo, string $column = 'created_at'): void

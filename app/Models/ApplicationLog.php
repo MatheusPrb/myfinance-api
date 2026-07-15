@@ -2,8 +2,12 @@
 
 namespace App\Models;
 
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property CarbonImmutable|null $created_at
+ */
 class ApplicationLog extends Model
 {
     public $timestamps = false;

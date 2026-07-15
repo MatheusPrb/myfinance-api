@@ -22,13 +22,16 @@ jobs:
       - name: Instalar dependências
         run: composer install --no-interaction --prefer-dist
 
-      - name: Preparar arquivo de ambiente
+      - name: Preparar o ambiente
         run: |
           cp .env.example .env
           touch database/database.sqlite
 
       - name: Gerar chave da aplicação
         run: php artisan key:generate
+
+      - name: Executar análise estática
+        run: composer analyse
 
       - name: Executar testes
         run: php artisan test
