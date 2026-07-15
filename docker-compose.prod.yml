@@ -2,10 +2,7 @@ name: myfinance-prod
 
 services:
   api:
-    build:
-      context: .
-      dockerfile: Dockerfile.prod
-    image: myfinance-api-app:${IMAGE_TAG:-prod}
+    image: ghcr.io/MatheusPrb/myfinance-api:${API_IMAGE_TAG:-latest}
     container_name: myfinance_prod_api
     restart: unless-stopped
     env_file:
