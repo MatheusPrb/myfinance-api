@@ -2,7 +2,7 @@ name: myfinance-prod
 
 services:
   api:
-    image: ghcr.io/MatheusPrb/myfinance-api:${API_IMAGE_TAG:-latest}
+    image: ghcr.io/matheusprb/myfinance-api:${API_IMAGE_TAG:-latest}
     container_name: myfinance_prod_api
     restart: unless-stopped
     env_file:
