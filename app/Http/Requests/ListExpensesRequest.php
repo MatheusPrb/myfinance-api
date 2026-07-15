@@ -19,8 +19,8 @@ final class ListExpensesRequest extends FormRequest
         return [
             'page' => ['sometimes', 'integer', 'min:1'],
             'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
-            'date_from' => ['sometimes', 'required_with:date_to', 'date', 'date_format:Y-m-d'],
-            'date_to' => ['sometimes', 'required_with:date_from', 'date', 'date_format:Y-m-d', 'after_or_equal:date_from'],
+            'date_from' => ['nullable', 'required_with:date_to', 'date', 'date_format:Y-m-d'],
+            'date_to' => ['nullable', 'required_with:date_from', 'date', 'date_format:Y-m-d', 'after_or_equal:date_from'],
             'category_id' => ['nullable', 'uuid'],
             'subcategory_id' => ['sometimes', 'uuid'],
         ];

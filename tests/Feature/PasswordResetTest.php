@@ -79,6 +79,10 @@ class PasswordResetTest extends TestCase
         $user->refresh();
         $this->assertTrue(Hash::check('NewPass2y', (string) $user->getRawOriginal('password')));
         $this->assertSame(0, $user->tokens()->count());
+        $this->assertDatabaseMissing('codes', [
+            'email' => $user->email,
+            'type' => CodeType::PasswordReset->value,
+        ]);
 
         $this->postJson('/api/v1/login', [
             'email' => $user->email,

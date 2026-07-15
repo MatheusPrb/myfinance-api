@@ -3,8 +3,10 @@
 namespace App\Application\UseCases\ResetPasswordWithCode;
 
 use App\Application\Support\PasswordResetCacheKeys;
+use App\Domain\Contracts\CodeRepositoryInterface;
 use App\Domain\Contracts\PasswordHasherInterface;
 use App\Domain\Contracts\UserRepositoryInterface;
+use App\Domain\Enums\CodeType;
 use App\Domain\Exceptions\InvalidPasswordResetCodeException;
 use App\Domain\Exceptions\PasswordResetTooManyAttemptsException;
 use App\Messages\Messages;
@@ -15,6 +17,7 @@ final class ResetPasswordWithCodeUseCase
     public function __construct(
         private UserRepositoryInterface $users,
         private PasswordHasherInterface $hasher,
+        private CodeRepositoryInterface $codes,
     ) {}
 
     public function execute(ResetPasswordWithCodeInput $input): void
@@ -24,12 +27,13 @@ final class ResetPasswordWithCodeUseCase
         $failKey = PasswordResetCacheKeys::fail($email);
 
         $codeHash = Cache::get($otpKey);
-        if (!$codeHash || !is_string($codeHash)) {
-            throw new InvalidPasswordResetCodeException(Messages::PASSWORD_RESET_CODE_INVALID);
-        }
+        $isValidCode = is_string($codeHash)
+            ? hash_equals($codeHash, hash('sha256', $input->code))
+            : $this->codes->matchesPlainCode($email, CodeType::PasswordReset, $input->code)
+        ;
 
-        if (!hash_equals($codeHash, hash('sha256', $input->code))) {
-            $this->registerFailedAttempt($otpKey, $failKey);
+        if (!$isValidCode) {
+            $this->registerFailedAttempt($email, $otpKey, $failKey);
         }
 
         $user = $this->users->findByEmail($email);
@@ -42,12 +46,13 @@ final class ResetPasswordWithCodeUseCase
         $hashed = $this->hasher->hash($input->password);
         $this->users->updatePassword($user->id(), $hashed);
         $this->users->revokeAllPersonalAccessTokens($user->id());
+        $this->codes->deleteByEmailAndType($email, CodeType::PasswordReset);
 
         Cache::forget($otpKey);
         Cache::forget($failKey);
     }
 
-    private function registerFailedAttempt(string $otpKey, string $failKey): never
+    private function registerFailedAttempt(string $email, string $otpKey, string $failKey): never
     {
         $maxAttempts = config('password_reset.max_attempts');
         $ttlMinutes = config('password_reset.ttl_minutes');
@@ -63,6 +68,7 @@ final class ResetPasswordWithCodeUseCase
         if ($fails >= $maxAttempts) {
             Cache::forget($otpKey);
             Cache::forget($failKey);
+            $this->codes->deleteByEmailAndType($email, CodeType::PasswordReset);
             throw new PasswordResetTooManyAttemptsException(Messages::PASSWORD_RESET_TOO_MANY_ATTEMPTS);
         }
 

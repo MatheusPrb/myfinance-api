@@ -10,6 +10,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -45,15 +46,7 @@ return Application::configure(basePath: dirname(__DIR__))
             );
         });
 
-        $exceptions->render(function (ForbiddenNotAdminException $e) {
-            return ApiResponse::error(
-                $e->getMessage(),
-                [],
-                $e->getStatusCode()
-            );
-        });
-
-        $exceptions->render(function (DomainException $e) {
+        $exceptions->render(function (DomainException|ForbiddenNotAdminException $e) {
             return ApiResponse::error(
                 $e->getMessage(),
                 [],
@@ -66,6 +59,14 @@ return Application::configure(basePath: dirname(__DIR__))
                 $e->getMessage(),
                 [],
                 401
+            );
+        });
+
+        $exceptions->render(function (NotFoundHttpException $e) {
+            return ApiResponse::error(  
+                Messages::NOT_FOUND,
+                [],
+                404
             );
         });
 

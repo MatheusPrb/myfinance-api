@@ -20,6 +20,17 @@ final class CodeRepository implements CodeRepositoryInterface
         ]);
     }
 
+    public function matchesPlainCode(string $email, CodeType $type, string $plainCode): bool
+    {
+        $code = CodeModel::query()
+            ->where('email', $email)
+            ->where('type', $type->value)
+            ->value('code')
+        ;
+
+        return is_string($code) && hash_equals($code, $plainCode);
+    }
+
     public function deleteByEmailAndType(string $email, CodeType $type): void
     {
         CodeModel::query()

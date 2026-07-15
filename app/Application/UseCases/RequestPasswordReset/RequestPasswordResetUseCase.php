@@ -28,15 +28,15 @@ final class RequestPasswordResetUseCase
         $code = sprintf('%06d', random_int(0, 999999));
         $ttlMinutes = config('password_reset.ttl_minutes');
 
-        Cache::put(
-            PasswordResetCacheKeys::otp($email),
-            hash('sha256', $code),
-            now()->addMinutes($ttlMinutes),
-        );
-
         if (config('password_reset.send_email')) {
             Mail::to($email)->send(new PasswordResetCodeMail($code, $ttlMinutes));
-        } 
+
+            Cache::put(
+                PasswordResetCacheKeys::otp($email),
+                hash('sha256', $code),
+                now()->addMinutes($ttlMinutes),
+            );
+        }
 
         $this->codes->replacePlainCode($email, CodeType::PasswordReset, $code);
     }
